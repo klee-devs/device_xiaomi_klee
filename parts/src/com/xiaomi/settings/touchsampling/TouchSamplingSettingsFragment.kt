@@ -21,6 +21,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.android.settingslib.widget.SettingsBasePreferenceFragment
 import com.xiaomi.settings.R
@@ -44,8 +45,11 @@ class TouchSamplingSettingsFragment : SettingsBasePreferenceFragment(), Preferen
         val htsrEnabled = mPrefs!!.getBoolean(HTSR_STATE, false)
         mHTSRPreference?.isChecked = htsrEnabled
         mHTSRPreference?.onPreferenceChangeListener = this
+        mAutoEnablePreference?.onPreferenceChangeListener = this
 
-        if (htsrEnabled) {
+        val autoEnable = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .getBoolean(HTSR_AUTO_ENABLE_KEY, false)
+        if (htsrEnabled || autoEnable) {
             startTouchSamplingService(true)
         }
 
@@ -57,10 +61,19 @@ class TouchSamplingSettingsFragment : SettingsBasePreferenceFragment(), Preferen
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-        if (HTSR_ENABLE_KEY == preference.key) {
-            val isEnabled = newValue as Boolean
-            mPrefs!!.edit().putBoolean(HTSR_STATE, isEnabled).apply()
-            startTouchSamplingService(isEnabled)
+        when (preference.key) {
+            HTSR_ENABLE_KEY -> {
+                val isEnabled = newValue as Boolean
+                mPrefs!!.edit().putBoolean(HTSR_STATE, isEnabled).apply()
+                val autoEnable = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getBoolean(HTSR_AUTO_ENABLE_KEY, false)
+                startTouchSamplingService(isEnabled || autoEnable)
+            }
+            HTSR_AUTO_ENABLE_KEY -> {
+                val autoEnable = newValue as Boolean
+                val htsrEnabled = mPrefs!!.getBoolean(HTSR_STATE, false)
+                startTouchSamplingService(htsrEnabled || autoEnable)
+            }
         }
         return true
     }

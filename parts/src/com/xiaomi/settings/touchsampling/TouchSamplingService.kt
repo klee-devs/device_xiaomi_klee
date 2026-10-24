@@ -35,7 +35,9 @@ class TouchSamplingService : Service() {
     private var mTouchFeature: ITouchFeature? = null
     private var mScreenUnlockReceiver: BroadcastReceiver? = null
     private var mPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    private var mDefaultPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
     private var mHandler: Handler? = null
+    private var mPollingRunnable: Runnable? = null
     private var mLastAppliedState = -1
 
     override fun onCreate() {
@@ -48,14 +50,10 @@ class TouchSamplingService : Service() {
         // Initialize and register the broadcast receiver
         registerScreenUnlockReceiver()
 
-        // Initialize and register the SharedPreferences listener
+        // Register the preference listeners and apply the configured mode.
         registerPreferenceChangeListener()
-
-        // Apply the touch sampling rate initially
-        applyTouchSamplingRateFromPreferences()
-
-        // Start foreground app polling to support per-app auto-enable
-        startForegroundPolling()
+        registerDefaultPreferenceChangeListener()
+        updateTouchSamplingState()
     }
 
     override fun onStartCommand(
@@ -64,19 +62,20 @@ class TouchSamplingService : Service() {
         startId: Int,
     ): Int {
         if (DEBUG) Log.d(TAG, "onStartCommand")
+        updateTouchSamplingState()
         return START_STICKY
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         Log.d(TAG, "TouchSamplingService stopped")
 
-        // Unregister the broadcast receiver
+        stopForegroundPolling()
+        applyTouchSamplingRate(0)
+
         if (mScreenUnlockReceiver != null) {
             unregisterReceiver(mScreenUnlockReceiver)
         }
 
-        // Unregister the SharedPreferences change listener
         val sharedPref = getSharedPreferences(
             TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
         )
@@ -84,10 +83,13 @@ class TouchSamplingService : Service() {
             sharedPref.unregisterOnSharedPreferenceChangeListener(mPreferenceChangeListener)
         }
 
-        // Stop the polling handler
-        if (mHandler != null) {
-            mHandler!!.removeCallbacksAndMessages(null)
+        val defaultPref = PreferenceManager.getDefaultSharedPreferences(this)
+        if (mDefaultPreferenceChangeListener != null) {
+            defaultPref.unregisterOnSharedPreferenceChangeListener(mDefaultPreferenceChangeListener)
         }
+
+        mHandler?.removeCallbacksAndMessages(null)
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -115,7 +117,7 @@ class TouchSamplingService : Service() {
             override fun onReceive(context: Context, intent: Intent) {
                 if (Intent.ACTION_USER_PRESENT == intent.action || Intent.ACTION_SCREEN_ON == intent.action) {
                     Log.d(TAG, "Screen turned on or device unlocked. Reapplying touch sampling rate.")
-                    applyTouchSamplingRateFromPreferences()
+                    updateTouchSamplingState()
                 }
             }
         }
@@ -135,26 +137,54 @@ class TouchSamplingService : Service() {
             TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
         )
 
-        mPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        mPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (TouchSamplingSettingsFragment.HTSR_STATE == key) {
                 Log.d(TAG, "Preference changed. Reapplying touch sampling rate.")
-                val htsrEnabled = sharedPreferences.getBoolean(key, false)
-                applyTouchSamplingRate(if (htsrEnabled) 1 else 0)
+                updateTouchSamplingState()
             }
         }
 
         sharedPref.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener)
     }
 
-    /**
-     * Reads the touch sampling rate preference and applies the appropriate state.
-     */
-    private fun applyTouchSamplingRateFromPreferences() {
-        val sharedPref = getSharedPreferences(
+    private fun registerDefaultPreferenceChangeListener() {
+        val defaultPref = PreferenceManager.getDefaultSharedPreferences(this)
+
+        mDefaultPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY ||
+                    key == TouchSamplingSettingsFragment.HTSR_APPS_PREF
+                ) {
+                    updateTouchSamplingState()
+                }
+            }
+
+        defaultPref.registerOnSharedPreferenceChangeListener(mDefaultPreferenceChangeListener)
+    }
+
+    private fun updateTouchSamplingState() {
+        val sharedGlobal = getSharedPreferences(
             TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
         )
-        val htsrEnabled = sharedPref.getBoolean(TouchSamplingSettingsFragment.HTSR_STATE, false)
-        applyTouchSamplingRate(if (htsrEnabled) 1 else 0)
+        val globalEnabled = sharedGlobal.getBoolean(
+            TouchSamplingSettingsFragment.HTSR_STATE, false
+        )
+        val defaultPref = PreferenceManager.getDefaultSharedPreferences(this)
+        val autoEnable = defaultPref.getBoolean(
+            TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY, false
+        )
+
+        when {
+            globalEnabled -> {
+                stopForegroundPolling()
+                applyTouchSamplingRate(1)
+            }
+            autoEnable -> startForegroundPolling()
+            else -> {
+                stopForegroundPolling()
+                applyTouchSamplingRate(0)
+            }
+        }
     }
 
     /**
@@ -182,7 +212,9 @@ class TouchSamplingService : Service() {
     }
 
     private fun startForegroundPolling() {
-        mHandler = Handler(Looper.getMainLooper())
+        if (mPollingRunnable != null) return
+
+        val handler = mHandler ?: Handler(Looper.getMainLooper()).also { mHandler = it }
         val runnable = object : Runnable {
             override fun run() {
                 try {
@@ -190,10 +222,21 @@ class TouchSamplingService : Service() {
                 } catch (e: Exception) {
                     Log.e(TAG, "Error during per-app check", e)
                 }
-                mHandler?.postDelayed(this, 1000)
+                if (mPollingRunnable === this) {
+                    handler.postDelayed(this, POLLING_INTERVAL_MS)
+                }
             }
         }
-        mHandler?.post(runnable)
+
+        mPollingRunnable = runnable
+        handler.post(runnable)
+    }
+
+    private fun stopForegroundPolling() {
+        mPollingRunnable?.let { runnable ->
+            mHandler?.removeCallbacks(runnable)
+        }
+        mPollingRunnable = null
     }
 
     private fun checkAndApplyPerAppState() {
@@ -225,5 +268,6 @@ class TouchSamplingService : Service() {
         private const val TAG = "TouchSamplingService"
         private val DEBUG = Log.isLoggable(TAG, Log.DEBUG)
         private const val TOUCH_GAME_MODE = 0
+        private const val POLLING_INTERVAL_MS = 1000L
     }
 }

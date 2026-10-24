@@ -26,6 +26,7 @@ import android.content.Intent
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.xiaomi.settings.R
 import com.xiaomi.settings.utils.writeLine
 
@@ -87,12 +88,18 @@ class TouchSamplingTileService : TileService() {
         saveTouchSamplingState(newState)
 
         val serviceIntent = Intent(this, TouchSamplingService::class.java)
+        val autoEnable = PreferenceManager.getDefaultSharedPreferences(this)
+            .getBoolean(TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY, false)
 
-        if (newState) {
+        if (newState || autoEnable) {
             startService(serviceIntent)
-            showTouchSamplingNotification()
         } else {
             stopService(serviceIntent)
+        }
+
+        if (newState) {
+            showTouchSamplingNotification()
+        } else {
             cancelTouchSamplingNotification()
         }
 
