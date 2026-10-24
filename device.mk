@@ -69,6 +69,10 @@ PRODUCT_SOONG_NAMESPACES += \
     hardware/mediatek/wlan/wifi_hal \
     hardware/xiaomi
 
+# Build the audio parameter parser against this tree's current AIDL.
+PRODUCT_PACKAGES += \
+    android.hardware.audio.parameter_parser.service
+
 # Linker config
 PRODUCT_VENDOR_LINKER_CONFIG_FRAGMENTS += \
     $(DEVICE_PATH)/configs/linker.config.json

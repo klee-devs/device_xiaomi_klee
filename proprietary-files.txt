@@ -21,9 +21,6 @@ vendor/lib64/vendor.mediatek.hardware.apuware.utils@2.0.so;MODULE_SUFFIX=-vendor
 
 # Audio
 odm/lib64/vendor.xiaomi.hardware.mediaeventgatherservice-V1-ndk.so
-system/lib64/av-audio-types-aidl-ndk.so:system/lib64/av-audio-types-aidl-V3-ndk.so;FIX_SONAME
-system_ext/bin/hw/android.hardware.audio.parameter_parser.service
-system_ext/etc/init/android.hardware.audio.parameter_parser.service.rc
 vendor/bin/hw/android.hardware.audio.service-aidl.mediatek
 vendor/etc/AudioDump_dynamic.ds
 vendor/etc/AudioLog_dynamic.ds

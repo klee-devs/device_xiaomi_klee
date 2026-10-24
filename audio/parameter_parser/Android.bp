@@ -1,0 +1,36 @@
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+cc_binary {
+    name: "android.hardware.audio.parameter_parser.service",
+    system_ext_specific: true,
+    relative_install_path: "hw",
+
+    defaults: [
+        "latest_android_hardware_audio_core_ndk_shared",
+    ],
+
+    shared_libs: [
+        "av-audio-types-aidl-ndk",
+        "libbase",
+        "libbinder_ndk",
+        "libmedia_helper",
+        "libmediautils",
+        "libutils",
+    ],
+
+    srcs: [
+        "main.cpp",
+        "ParameterParser.cpp",
+    ],
+
+    init_rc: ["android.hardware.audio.parameter_parser.service.rc"],
+
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+        "-Wthread-safety",
+    ],
+}
