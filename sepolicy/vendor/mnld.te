@@ -1,0 +1,3 @@
+# Allow GNSS MPE to access the sensor hub and servicemanager.
+binder_use(mnld)
+allow mnld hf_manager_device:chr_file rw_file_perms;
