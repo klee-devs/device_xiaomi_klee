@@ -9,7 +9,7 @@ allow mediacodec sysfs_leds:lnk_file read;
 allow mediacodec sysfs_leds:file r_file_perms;
 
 # DisplayFeature can pass an already-open brightness descriptor to the decoder.
-allow mediacodec vendor_hal_displayfeature_xiaomi_default:fd use;
+allow mediacodec vendor_hal_displayfeature_default:fd use;
 
 # Dolby reads graphics, vendor, and zygote configuration properties.
 # Keep the generic default_prop type ungranted; its AVC does not identify a key.
