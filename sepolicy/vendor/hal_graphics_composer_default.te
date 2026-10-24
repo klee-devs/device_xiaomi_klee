@@ -13,3 +13,6 @@ allow hal_graphics_composer_default vendor_displayfeature_device:chr_file r_file
 get_prop(hal_graphics_composer_default, vendor_displayfeature_prop)
 
 allow hal_graphics_composer_default vendor_persist_display_file:file r_file_perms;
+
+# Dolby Vision decoded-frame handoff to HWC.
+allow hal_graphics_composer_default mediacodec:fd use;

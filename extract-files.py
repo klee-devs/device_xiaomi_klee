@@ -203,6 +203,19 @@ blob_fixups: blob_fixups_user_type = {
     ('odm/lib64/camera/dynamicplugins/com.xiaomi.plugin.gainmap.so',
      'odm/lib64/camera/dynamicplugins/com.xiaomi.plugin.jpegrAggr.so'): blob_fixup()
         .replace_needed('libultrahdr.so', 'libultrahdr_klee.so'),
+    'vendor/lib64/libdlbdsservice.so': blob_fixup()
+        .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v33.so'),
+    (
+        'vendor/bin/hw/vendor.dolby.media.c2-service-vision',
+        'vendor/lib64/c2.dolby.client.so',
+    ): blob_fixup()
+        .replace_needed('libcodec2_aidl.so', 'libcodec2_aidl_prebuilt.so'),
+    (
+        'vendor/lib64/c2.dolby.hevc.dec.so',
+        'vendor/lib64/c2.dolby.hevc.sec.dec.so',
+    ): blob_fixup()
+        .call(blob_fixup_graphic_buffer_size)
+        .replace_needed('libcodec2_aidl.so', 'libcodec2_aidl_prebuilt.so'),
     'vendor/bin/hw/mtkfusionrild': blob_fixup()
         .add_needed('libutils-v33.so'),
     'vendor/bin/mnld': blob_fixup()

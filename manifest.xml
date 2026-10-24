@@ -1,5 +1,11 @@
 <manifest version="7.0" type="device" target-level="7">
     <hal format="aidl">
+        <name>android.hardware.media.c2</name>
+        <version>1</version>
+        <fqname>IComponentStore/dolby</fqname>
+        <fqname>IComponentStore/dolby_audio</fqname>
+    </hal>
+    <hal format="aidl">
         <name>android.hardware.soundtrigger3</name>
         <version>2</version>
         <fqname>ISoundTriggerHw/default</fqname>

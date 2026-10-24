@@ -1,0 +1,25 @@
+# Dolby Vision and Dolby audio Codec2 services.
+allow mediacodec hal_aidl_dms_service:service_manager find;
+binder_call(mediacodec, hal_aidl_dms_default)
+binder_use(mediacodec)
+
+# The decoder reads the LCD backlight limit through /sys/class/leds.
+allow mediacodec sysfs_leds:dir search;
+allow mediacodec sysfs_leds:lnk_file read;
+allow mediacodec sysfs_leds:file r_file_perms;
+
+# DisplayFeature can pass an already-open brightness descriptor to the decoder.
+allow mediacodec vendor_hal_displayfeature_xiaomi_default:fd use;
+
+# Dolby reads graphics, vendor, and zygote configuration properties.
+# Keep the generic default_prop type ungranted; its AVC does not identify a key.
+get_prop(mediacodec, graphics_config_writable_prop)
+get_prop(mediacodec, vendor_default_prop)
+get_prop(mediacodec, zygote_config_prop)
+
+# Ambient-light sensor service access for Dolby tone mapping.
+allow mediacodec fwk_sensor_service:service_manager find;
+binder_call(mediacodec, system_server)
+
+# Dolby's Mali path discovers the vendor compression service.
+allow mediacodec mtk_hal_mali_platform_default_service:service_manager find;

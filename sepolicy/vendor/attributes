@@ -4,6 +4,11 @@ attribute vendor_hal_displayfeature_client;
 attribute vendor_hal_displayfeature_server;
 
 
+# Dolby DMS HAL
+attribute hal_aidl_dms;
+attribute hal_aidl_dms_client;
+attribute hal_aidl_dms_server;
+
 # ID manager
 attribute hal_idmanager;
 attribute hal_idmanager_client;
