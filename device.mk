@@ -140,6 +140,13 @@ PRODUCT_PACKAGES += \
     libvolumesw \
     libextensioneffect
 
+# Enable MediaTek SuperVolume for media, ringtone, and notification streams.
+# The volume service applies the scene only when routed to the built-in speaker.
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.vendor.audio.supervolume.support=1 \
+    ro.vendor.audio.volume_super_index_add=20 \
+    ro.vendor.audio.volume_super_streamtype=44
+
 PRODUCT_PACKAGES += \
     MtkInCallService
 
