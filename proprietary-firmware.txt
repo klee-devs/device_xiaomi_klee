@@ -3,6 +3,7 @@ apusys.img;AB
 audio_dsp.img;AB
 ccu.img;AB
 connsys_bt.img;AB
+# Updated from OS3.0.308.0.WPJMIXM release-keys
 connsys_gnss.img;AB
 connsys_wifi.img;AB
 dpm.img;AB
