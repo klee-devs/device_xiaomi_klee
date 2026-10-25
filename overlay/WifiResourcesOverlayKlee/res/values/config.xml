@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <!-- Klee supports Wi-Fi 6 on 2.4/5 GHz, but not Wi-Fi 6E. -->
+    <bool name="config_wifi6ghzSupport" translatable="false">false</bool>
+    <bool name="config_wifiSoftap6ghzSupported" translatable="false">false</bool>
+</resources>
