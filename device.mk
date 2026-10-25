@@ -10,7 +10,7 @@ DEVICE_PATH := device/xiaomi/klee
 # Filtering the generic SurfaceFlinger tag also hides its other non-fatal logs.
 PRODUCT_SYSTEM_PROPERTIES += \
     log.tag.mtk_wfd_page-uncached=FATAL \
-    log.tag.surfaceflinger=FATAL
+    log.tag.SurfaceFlinger=FATAL
 
 # MediaTek SoC identification
 PRODUCT_PACKAGES += \
