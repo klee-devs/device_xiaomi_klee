@@ -54,10 +54,14 @@
     <string name="core_7">Core 7 (Prime)</string>
 
     <!-- Charging Control -->
-    <string name="charging_control_title">Bypass Charging</string>
+    <string name="charging_control_title">Charging Control</string>
+    <string name="bypass_charging_title">Bypass Charging</string>
+    <string name="bypass_charging_summary">Stop battery charging immediately while connected to a charger. Bypass turns off automatically when the charger is removed.</string>
+    <string name="charging_limit_switch_title">Use Charging Limit</string>
+    <string name="charging_limit_switch_summary">Pause charging at the selected percentage and resume five points lower</string>
     <string name="charging_limit_title">Stop Charging At</string>
     <string name="charging_limit_summary">Charging pauses at %1$d%% and resumes at %2$d%%.</string>
-    <string name="charging_control_summary">Pause battery charging at your selected level while connected to a charger</string>
+    <string name="charging_control_summary">Set a charge limit or enable bypass charging</string>
 
     <!-- GameBar Overlay -->
     <string name="game_bar_title">Game Bar</string>

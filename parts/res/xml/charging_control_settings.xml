@@ -3,13 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.android.settingslib.widget.MainSwitchPreference
-        android:key="charging_control"
-        android:title="@string/charging_control_title"
+        android:key="bypass_charging"
+        android:title="@string/bypass_charging_title"
+        android:summary="@string/bypass_charging_summary"
         android:defaultValue="false" />
 
     <PreferenceCategory
         android:title="Settings"
         app:allowDividerAbove="true">
+
+        <SwitchPreferenceCompat
+            android:key="charging_control"
+            android:title="@string/charging_limit_switch_title"
+            android:summary="@string/charging_limit_switch_summary"
+            android:defaultValue="false" />
 
         <com.android.settingslib.widget.SliderPreference
             android:key="charging_limit"
