@@ -1760,7 +1760,6 @@ vendor/lib64/libdolbyottcameracontrol.so
 # Media (Codec2)
 vendor/etc/TL_settings.json
 vendor/etc/VideoLog_dynamic.ds
-vendor/etc/mtk_platform_codecs_config.xml
 vendor/lib64/libcodec2_fsr.so
 vendor/lib64/libcodec2_mtk_c2store.so
 vendor/lib64/libcodec2_mtk_vdec.so

@@ -177,18 +177,6 @@
             <Feature name="encoding-statistics" />
             <Feature name="can-swap-width-height"/>
         </MediaCodec>
-        <MediaCodec name="c2.mtk.avc.encoder.secure" type="video/avc" >
-            <Limit name="size" min="160x128" max="3840x2176" />
-            <Limit name="alignment" value="2x2" />
-            <Limit name="block-size" value="16x16" />
-            <!-- max 3840x2176@60 -->
-            <Limit name="block-count" range="80-32640" />
-            <Limit name="blocks-per-second" range="80-1958400" />
-            <Limit name="bitrate" range="1-160000000" />
-            <Limit name="concurrent-instances" max="10" />
-            <Limit name="performance-point-3840x2160" value="30" />
-            <Feature name="special-codec" required="true" />
-        </MediaCodec>
         <MediaCodec name="c2.mtk.hevc.encoder" type="video/hevc">
             <Limit name="size" min="160x128" max="3840x2176" />
             <Limit name="alignment" value="2x2" />
@@ -207,20 +195,6 @@
             <Feature name="hdr-editing"/>
             <Feature name="hlg-editing"/>
             <Feature name="can-swap-width-height"/>
-        </MediaCodec>
-        <MediaCodec name="c2.mtk.hevc.encoder.secure" type="video/hevc" >
-            <Limit name="size" min="160x128" max="3840x2160" />
-            <Limit name="alignment" value="2x2" />
-            <Limit name="block-size" value="16x16" />
-            <!-- max 3840x2160@30 -->
-            <Limit name="block-count" range="80-32400" />
-            <Limit name="blocks-per-second" range="80-972000" />
-            <Limit name="bitrate" range="1-160000000" />
-            <Limit name="quality" range="0-100" default="50" />
-            <Limit name="concurrent-instances" max="10" />
-            <Feature name="bitrate-modes" value="VBR,CBR,CQ" />
-            <Limit name="performance-point-3840x2160" value="30" />
-            <Feature name="special-codec" required="true" />
         </MediaCodec>
         <MediaCodec name="c2.mtk.heif.encoder" type="image/vnd.android.heic" >
             <Limit name="size" min="160x128" max="16383x16383" />
