@@ -6,9 +6,11 @@
 
 DEVICE_PATH := device/xiaomi/klee
 
-# Keep the MediaTek mapper's unsupported-metadata log isolated from other SurfaceFlinger messages.
+# Suppress mapper unsupported-metadata messages from both tags.
+# Filtering the generic SurfaceFlinger tag also hides its other non-fatal logs.
 PRODUCT_SYSTEM_PROPERTIES += \
-    log.tag.mtk_wfd_page-uncached=FATAL
+    log.tag.mtk_wfd_page-uncached=FATAL \
+    log.tag.surfaceflinger=FATAL
 
 # MediaTek SoC identification
 PRODUCT_PACKAGES += \
