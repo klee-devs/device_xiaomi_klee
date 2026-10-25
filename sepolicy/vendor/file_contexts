@@ -7,6 +7,7 @@
 /(vendor|system/vendor)/bin/batterysecret                                                              u:object_r:vendor_batterysecret_exec:s0
 
 # Camera
+/dev/camlog u:object_r:camlog_device:s0
 /data/vendor/camera(/.*)?                                                                              u:object_r:vendor_camera_data_file:s0
 /mnt/vendor/persist/camera(/.*)?                                                                       u:object_r:camera_persist_file:s0
 /odm/bin/crossbuild/DataSet/SQLiteModule/db(/.*)?                                                      u:object_r:vendor_camera_update_db_file:s0
