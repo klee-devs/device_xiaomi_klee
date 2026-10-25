@@ -9,12 +9,12 @@ dpm.img;AB
 gpueb.img;AB
 gz.img;AB
 logo.img;AB|dfe50f00be248e380402c438ec0bf4e67536c087
-lk.img;AB|a284808a41281ed88c0971bcc08e18c56c4db84a
+lk.img;AB|8daa12bb697144e3e08e5af9cb29f94e66b174af
 mcf_ota.img;AB
 mcupm.img;AB
 modem.img;AB
 mvpu_algo.img;AB
-preloader_raw.img;AB|7a3825988d0a5aff386b1c2f1eab0172ab4e1e82
+preloader_raw.img;AB|58b36a1e257e4e4362b39b825ab673f1c9dd77fd
 pi_img.img;AB
 scp.img;AB
 spmfw.img;AB
