@@ -160,11 +160,11 @@
          overridden in platform specific overlays -->
     <array name="config_autoBrightnessDisplayValuesNits">
         <item>3.5</item>
-        <item>7.69</item>
-        <item>11.87</item>
-        <item>16.05</item>
-        <item>20.23</item>
-        <item>24.42</item>
+        <item>6.43</item>
+        <item>10.87</item>
+        <item>15.3</item>
+        <item>19.73</item>
+        <item>24.17</item>
         <item>28.6</item>
         <item>30.84</item>
         <item>32.07</item>
@@ -190,104 +190,104 @@
         <item>76.73</item>
         <item>79.89</item>
         <item>83.13</item>
-        <item>83.59</item>
-        <item>84.04</item>
-        <item>84.51</item>
-        <item>84.95</item>
-        <item>85.4</item>
-        <item>85.84</item>
-        <item>86.28</item>
-        <item>86.73</item>
-        <item>87.19</item>
-        <item>87.62</item>
-        <item>88.05</item>
-        <item>88.49</item>
-        <item>88.92</item>
-        <item>89.36</item>
-        <item>90.81</item>
-        <item>92.27</item>
-        <item>93.72</item>
-        <item>95.25</item>
-        <item>96.63</item>
-        <item>98.09</item>
-        <item>99.55</item>
-        <item>101</item>
-        <item>102.46</item>
-        <item>103.91</item>
-        <item>105.37</item>
-        <item>106.82</item>
-        <item>108.28</item>
-        <item>109.74</item>
-        <item>111.26</item>
-        <item>112.65</item>
-        <item>114.1</item>
-        <item>115.58</item>
-        <item>117.09</item>
-        <item>118.6</item>
-        <item>126.14</item>
-        <item>135.8</item>
-        <item>155.12</item>
-        <item>175.34</item>
-        <item>196.77</item>
-        <item>218.67</item>
-        <item>241.05</item>
-        <item>263.84</item>
-        <item>275.4</item>
-        <item>335.38</item>
-        <item>397.98</item>
-        <item>415.69</item>
-        <item>433.39</item>
-        <item>451.1</item>
-        <item>468.81</item>
-        <item>486.51</item>
-        <item>504.22</item>
-        <item>521.93</item>
-        <item>539.63</item>
-        <item>557.34</item>
-        <item>575.04</item>
-        <item>592.75</item>
-        <item>610.46</item>
-        <item>628.16</item>
-        <item>645.87</item>
-        <item>663.58</item>
-        <item>681.28</item>
-        <item>698.99</item>
-        <item>716.7</item>
-        <item>734.4</item>
-        <item>752.11</item>
-        <item>769.82</item>
-        <item>787.52</item>
-        <item>805.23</item>
-        <item>822.94</item>
-        <item>858.35</item>
-        <item>893.76</item>
-        <item>929.17</item>
-        <item>964.59</item>
-        <item>1000</item>
-        <item>1050</item>
-        <item>1100</item>
-        <item>1150</item>
-        <item>1200</item>
-        <item>1250</item>
-        <item>1300</item>
-        <item>1350</item>
-        <item>1400</item>
-        <item>1450</item>
-        <item>1500</item>
-        <item>1750</item>
-        <item>2000</item>
-        <item>2250</item>
-        <item>2500</item>
-        <item>2750</item>
-        <item>3000</item>
+        <item>83.75</item>
+        <item>84.37</item>
+        <item>84.98</item>
+        <item>85.6</item>
+        <item>86.22</item>
+        <item>86.84</item>
+        <item>87.45</item>
+        <item>88.07</item>
+        <item>88.69</item>
+        <item>89.31</item>
+        <item>89.92</item>
+        <item>90.54</item>
+        <item>91.16</item>
+        <item>91.78</item>
+        <item>94.25</item>
+        <item>96.72</item>
+        <item>99.19</item>
+        <item>101.66</item>
+        <item>104.13</item>
+        <item>106.6</item>
+        <item>109.07</item>
+        <item>111.54</item>
+        <item>114.01</item>
+        <item>116.48</item>
+        <item>118.95</item>
+        <item>121.42</item>
+        <item>123.89</item>
+        <item>126.36</item>
+        <item>128.83</item>
+        <item>131.3</item>
+        <item>133.78</item>
+        <item>136.25</item>
+        <item>138.72</item>
+        <item>141.19</item>
+        <item>153.54</item>
+        <item>165.89</item>
+        <item>190.6</item>
+        <item>215.3</item>
+        <item>240.01</item>
+        <item>264.71</item>
+        <item>289.42</item>
+        <item>314.12</item>
+        <item>326.47</item>
+        <item>388.24</item>
+        <item>450</item>
+        <item>467.94</item>
+        <item>485.88</item>
+        <item>503.82</item>
+        <item>521.76</item>
+        <item>539.71</item>
+        <item>557.65</item>
+        <item>575.59</item>
+        <item>593.53</item>
+        <item>611.47</item>
+        <item>629.41</item>
+        <item>647.35</item>
+        <item>665.29</item>
+        <item>683.24</item>
+        <item>701.18</item>
+        <item>719.12</item>
+        <item>737.06</item>
+        <item>755</item>
+        <item>772.94</item>
+        <item>790.88</item>
+        <item>808.82</item>
+        <item>826.76</item>
+        <item>844.71</item>
+        <item>862.65</item>
+        <item>880.59</item>
+        <item>916.47</item>
+        <item>952.35</item>
+        <item>988.24</item>
+        <item>1024.12</item>
+        <item>1060</item>
+        <item>1108.64</item>
+        <item>1157.27</item>
+        <item>1181.59</item>
+        <item>1254.55</item>
+        <item>1303.18</item>
+        <item>1351.82</item>
+        <item>1400.45</item>
+        <item>1449.09</item>
+        <item>1497.73</item>
+        <item>1546.36</item>
+        <item>1789.55</item>
+        <item>2032.73</item>
+        <item>2275.91</item>
+        <item>2519.09</item>
+        <item>2762.27</item>
+        <item>3005.45</item>
         <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
-        <item>3200</item>
+        <item>3491.82</item>
+        <item>3500</item>
+        <item>3500</item>
+        <item>3500</item>
+        <item>3500</item>
+        <item>3500</item>
+        <item>3500</item>
     </array>
 
     <!-- Array of light sensor lux values to define our levels for auto backlight brightness support.
@@ -417,7 +417,7 @@
         <item>20000</item>
         <item>21000</item>
         <item>22000</item>
-        <item>23000</item>
+        <item>22500</item>
         <item>24000</item>
         <item>25000</item>
         <item>26000</item>
@@ -433,7 +433,7 @@
         <item>60000</item>
         <item>64000</item>
         <item>70000</item>
-        <item>75000</item>
+        <item>70168</item>
         <item>80000</item>
         <item>85000</item>
         <item>90000</item>
