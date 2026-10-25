@@ -201,6 +201,8 @@ blob_fixups: blob_fixups_user_type = {
     ('odm/lib64/camera/dynamicplugins/com.xiaomi.plugin.gainmap.so',
      'odm/lib64/camera/dynamicplugins/com.xiaomi.plugin.jpegrAggr.so'): blob_fixup()
         .replace_needed('libultrahdr.so', 'libultrahdr_klee.so'),
+    'vendor/lib64/libcodec2_aidl_prebuilt.so': blob_fixup()
+        .add_needed('libcodec2_aidl_compat.so'),
     'vendor/lib64/libdlbdsservice.so': blob_fixup()
         .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v33.so'),
     (

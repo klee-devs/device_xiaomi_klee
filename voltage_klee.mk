@@ -37,8 +37,8 @@ EXTRA_UDFPS_ANIMATIONS := true
 TARGET_ENABLE_BLUR := true
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    BuildDesc="missi-user 16 BP2A.250605.031.A3 16OS3.1.260812.200011854.MTPEGL.S release-keys" \
-    BuildFingerprint=POCO/klee_global/klee:16/BP2A.250605.031.A3/OS3.0.307.0.WPJMIXM:user/release-keys \
+    BuildDesc="missi-user 16 BP2A.250605.031.A3 16OS3.1.260919.171013831.MTPEGL.S release-keys" \
+    BuildFingerprint=POCO/klee_global/klee:16/BP2A.250605.031.A3/OS3.0.308.0.WPJMIXM:user/release-keys \
     DeviceName=$(PRODUCT_SYSTEM_DEVICE) \
     DeviceProduct=$(PRODUCT_SYSTEM_NAME) \
     SystemDevice=$(PRODUCT_SYSTEM_DEVICE) \
