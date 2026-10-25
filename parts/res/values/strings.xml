@@ -54,10 +54,10 @@
     <string name="core_7">Core 7 (Prime)</string>
 
     <!-- Charging Control -->
-    <string name="charging_control_title">Charging Control</string>
-    <string name="charging_limit_title">Stop at Percentage</string>
-    <string name="charging_limit_summary">Current limit: %1$d%%</string>
-    <string name="charging_control_summary">Improve battery lifespan by limiting Charge Percentage</string>
+    <string name="charging_control_title">Bypass Charging</string>
+    <string name="charging_limit_title">Stop Charging At</string>
+    <string name="charging_limit_summary">Charging pauses at %1$d%% and resumes at %2$d%%.</string>
+    <string name="charging_control_summary">Pause battery charging at your selected level while connected to a charger</string>
 
     <!-- GameBar Overlay -->
     <string name="game_bar_title">Game Bar</string>

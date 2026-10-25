@@ -6,9 +6,7 @@
 
 package com.xiaomi.settings.battery
 
-import android.content.Context
 import android.content.Intent
-import android.os.BatteryManager
 import android.os.Bundle
 import androidx.preference.Preference
 import com.android.settingslib.widget.SliderPreference
@@ -48,20 +46,20 @@ class ChargingControlFragment : SettingsBasePreferenceFragment(),
             updateSummary(limit)
         }
 
-        val currentLevel = getBatteryLevel()
-        BatteryUtils.setChargingSuspendAsync(isEnabled && currentLevel >= limit)
-
-        requireContext().startService(Intent(requireContext(), ChargingLimitService::class.java))
+        val serviceIntent = Intent(requireContext(), ChargingLimitService::class.java).apply {
+            putExtra(ChargingLimitService.EXTRA_ENABLED, isEnabled)
+            putExtra(ChargingLimitService.EXTRA_LIMIT, limit)
+        }
+        requireContext().startService(serviceIntent)
         return true
     }
 
-    private fun getBatteryLevel(): Int {
-        val bm = requireContext().getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
-        return bm?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: 0
-    }
-
     private fun updateSummary(value: Int) {
-        mLimitPref?.summary = getString(R.string.charging_limit_summary, value)
+        mLimitPref?.summary = getString(
+            R.string.charging_limit_summary,
+            value,
+            (value - 5).coerceAtLeast(0)
+        )
     }
 
     override fun onDestroyView() {

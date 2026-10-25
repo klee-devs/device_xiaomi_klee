@@ -4,7 +4,7 @@
 
     <com.android.settingslib.widget.MainSwitchPreference
         android:key="charging_control"
-        android:title="Use Charging Limit"
+        android:title="@string/charging_control_title"
         android:defaultValue="false" />
 
     <PreferenceCategory

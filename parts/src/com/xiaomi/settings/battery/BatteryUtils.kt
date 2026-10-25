@@ -7,10 +7,6 @@
 package com.xiaomi.settings.battery
 
 import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -20,14 +16,24 @@ object BatteryUtils {
     private const val TAG = "XiaomiBatteryUtils"
     const val PREF_CHARGING_CTRL = "charging_control"
     const val PREF_CHARGING_LIMIT = "charging_limit"
-    private const val NODE_SUSPEND = "/sys/class/power_supply/battery/input_suspend"
+    private const val NODE_SMART_CHG = "/sys/class/power_supply/battery/smart_chg"
+    private const val SMART_CHG_NORMAL = "0x10"
+    private const val SMART_CHG_LIMIT_MODE = 0x11
 
-    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    fun setSmartChargeLimit(enabled: Boolean, limit: Int) {
+        val file = File(NODE_SMART_CHG)
+        if (!file.exists()) {
+            Log.w(TAG, "Charging control unavailable: $NODE_SMART_CHG does not exist")
+            return
+        }
 
-    fun setChargingSuspend(suspend: Boolean) {
-        val file = File(NODE_SUSPEND)
-        if (!file.exists()) return
-        val value = if (suspend) "1" else "0"
+        val safeLimit = limit.coerceIn(10, 100)
+        val value = if (enabled) {
+            "0x${((safeLimit shl 16) or SMART_CHG_LIMIT_MODE).toString(16)}"
+        } else {
+            SMART_CHG_NORMAL
+        }
+
         try {
             FileOutputStream(file).use { fos ->
                 fos.write(value.toByteArray(StandardCharsets.UTF_8))
@@ -36,15 +42,9 @@ object BatteryUtils {
                     fos.fd.sync()
                 } catch (ignored: IOException) {}
             }
-            Log.d(TAG, "Successfully wrote $value to $NODE_SUSPEND")
+            Log.d(TAG, "Successfully wrote $value to $NODE_SMART_CHG")
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to write to $NODE_SUSPEND", e)
-        }
-    }
-
-    fun setChargingSuspendAsync(suspend: Boolean) {
-        ioScope.launch {
-            setChargingSuspend(suspend)
+            Log.e(TAG, "Failed to write to $NODE_SMART_CHG", e)
         }
     }
 }
