@@ -40,6 +40,11 @@
     <string name="touch_sampling_mode_title">High Touch Polling Mode</string>
     <string name="touch_sampling_mode_notification">High Touch Polling Rate is now active. This reduces touch input latency but may increase battery consumption</string>
 
+    <!-- Low-light fingerprint unlock -->
+    <string name="fingerprint_settings_category_title">Fingerprint</string>
+    <string name="low_light_fingerprint_title">Low-light fingerprint unlock</string>
+    <string name="low_light_fingerprint_summary">Reduce fingerprint illumination in dark environments. Unlocking may take longer.</string>
+
     <!-- Core Control -->
     <string name="core_control_title">Core Control</string>
     <string name="core_control_summary">Manually enable or disable individual CPU cores</string>

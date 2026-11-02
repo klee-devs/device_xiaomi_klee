@@ -8,6 +8,7 @@
 
 #include <aidl/android/hardware/biometrics/fingerprint/BnFingerprint.h>
 #include <android-base/logging.h>
+#include <android-base/properties.h>
 #include <android-base/unique_fd.h>
 
 #include <atomic>
@@ -33,6 +34,7 @@
 
 #define COMMAND_NIT 10
 #define PARAM_NIT_FOD 1
+#define PARAM_NIT_FOD_LOW_LIGHT 6
 #define PARAM_NIT_NONE 0
 
 #define COMMAND_FOD_PRESS_STATUS 1
@@ -66,6 +68,8 @@ typedef struct {
 using ::aidl::android::hardware::biometrics::fingerprint::AcquiredInfo;
 
 namespace {
+
+constexpr char kLowLightFodProperty[] = "persist.vendor.xiaomi.udfps_low_light";
 
 template <typename T>
 static void set(const std::string& path, const T& value) {
@@ -126,6 +130,10 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
         disp_fd_ = android::base::unique_fd(open(DISP_FEATURE_PATH, O_RDWR));
         touch_fd_ = android::base::unique_fd(open(TOUCH_DEV_PATH, O_RDWR));
 
+        mLowLightFodEnabled.store(
+                android::base::GetBoolProperty(kLowLightFodProperty, false));
+        setLowBrightnessFod(mLowLightFodEnabled.load());
+
         // Thread to listen for fod ui changes
         std::thread([this]() {
             int fd = open(DISP_FEATURE_PATH, O_RDWR);
@@ -168,6 +176,8 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
                 LOG(DEBUG) << "received data: " << std::bitset<8>(value);
 
                 bool localHbmUiReady = value & LOCAL_HBM_UI_READY;
+                bool lowBrightnessCapture =
+                        mLowLightFodEnabled.load() && (value & FOD_LOW_BRIGHTNESS_CAPTURE);
 
                 // Ignore late panel-ready notifications after authentication. A late
                 // NIT_FOD command can turn the FOD glow back on after it was cleared.
@@ -177,8 +187,11 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
                     continue;
                 }
 
-                mDevice->extCmd(mDevice, COMMAND_NIT,
-                                localHbmUiReady ? PARAM_NIT_FOD : PARAM_NIT_NONE);
+                mDevice->extCmd(
+                        mDevice, COMMAND_NIT,
+                        localHbmUiReady
+                                ? (lowBrightnessCapture ? PARAM_NIT_FOD_LOW_LIGHT : PARAM_NIT_FOD)
+                                : PARAM_NIT_NONE);
             }
         }).detach();
     }
@@ -186,6 +199,11 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
     void onFingerDown(uint32_t /*x*/, uint32_t /*y*/, float /*minor*/, float /*major*/) {
         mAuthCompleted.store(false);
         mAuthGeneration.fetch_add(1);
+
+        const bool lowLightFodEnabled =
+                android::base::GetBoolProperty(kLowLightFodProperty, false);
+        mLowLightFodEnabled.store(lowLightFodEnabled);
+        setLowBrightnessFod(lowLightFodEnabled);
         setFingerDown(true);
     }
 
@@ -250,7 +268,21 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
     android::base::unique_fd disp_fd_;
     android::base::unique_fd touch_fd_;
     std::atomic<bool> mAuthCompleted{false};
+    std::atomic<bool> mLowLightFodEnabled{false};
     std::atomic<uint32_t> mAuthGeneration{0};
+
+    void setLowBrightnessFod(bool enabled) {
+        disp_feature_req req = {};
+        req.base.flag = 0;
+        req.base.disp_id = MI_DISP_PRIMARY;
+        req.feature_id = DISP_FEATURE_LOW_BRIGHTNESS_FOD;
+        req.feature_val = enabled ? FEATURE_ON : FEATURE_OFF;
+
+        if (ioctl(disp_fd_.get(), MI_DISP_IOCTL_SET_FEATURE, &req) < 0) {
+            PLOG(WARNING) << "Failed to " << (enabled ? "enable" : "disable")
+                          << " low-brightness FOD";
+        }
+    }
 
     void setFodStatus(int value) {
         ioctl(touch_fd_.get(), TOUCH_IOC_SELECT_TOUCH_ID, MI_DISP_PRIMARY);

@@ -37,4 +37,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/fingerprint_settings_category_title">
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="parts_low_light_fingerprint"
+            android:title="@string/low_light_fingerprint_title"
+            android:summary="@string/low_light_fingerprint_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

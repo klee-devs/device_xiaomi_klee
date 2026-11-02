@@ -24,3 +24,4 @@ allow hal_fingerprint_default vendor_displayfeature_device:chr_file rw_file_perm
 allow hal_fingerprint_default vendor_touchfeature_device:chr_file rw_file_perms;
 
 set_prop(hal_fingerprint_default, vendor_fingerprint_prop)
+get_prop(hal_fingerprint_default, vendor_udfps_low_light_prop)

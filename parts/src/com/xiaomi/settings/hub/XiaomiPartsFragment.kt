@@ -18,7 +18,10 @@ package com.xiaomi.settings.hub
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemProperties
+import android.util.Log
 import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.android.settingslib.widget.SettingsBasePreferenceFragment
 import com.xiaomi.settings.R
 import com.xiaomi.settings.battery.ChargingControlActivity
@@ -56,6 +59,22 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
             startActivity(Intent(context, ChargingControlActivity::class.java))
             true
         }
+
+        findPreference<SwitchPreferenceCompat>(KEY_LOW_LIGHT_FOD)?.apply {
+            isChecked = SystemProperties.getBoolean(PROP_LOW_LIGHT_FOD, false)
+            setOnPreferenceChangeListener { _, newValue ->
+                try {
+                    SystemProperties.set(
+                        PROP_LOW_LIGHT_FOD,
+                        if (newValue as Boolean) "1" else "0",
+                    )
+                    true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to update low-light fingerprint unlock", e)
+                    false
+                }
+            }
+        }
     }
 
     companion object {
@@ -64,5 +83,8 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_TOUCH_SAMPLING = "parts_touch_sampling"
         private const val KEY_CORE_CONTROL = "parts_core_control"
         private const val KEY_CHARGING_CONTROL = "parts_charging_control"
+        private const val KEY_LOW_LIGHT_FOD = "parts_low_light_fingerprint"
+        private const val PROP_LOW_LIGHT_FOD = "persist.vendor.xiaomi.udfps_low_light"
+        private const val TAG = "XiaomiParts"
     }
 }
