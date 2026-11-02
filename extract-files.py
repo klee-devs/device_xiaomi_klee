@@ -130,6 +130,8 @@ blob_fixups: blob_fixups_user_type = {
     ('odm/bin/hw/vendor.xiaomi.sensor.citsensorservice.aidl', 'odm/lib64/hw/displayfeature.default.so'): blob_fixup()
         .replace_needed('android.hardware.sensors-V2-ndk.so', 'android.hardware.sensors-V3-ndk.so')
         .replace_needed('libtinyxml2.so', 'libtinyxml2-v34.so'),
+    'odm/etc/init/vendor.xiaomi.sensor.citsensorservice.aidl.rc': blob_fixup()
+        .add_line_if_missing('    task_profiles ServiceCapacityLow'),
     (
         'vendor/bin/hw/mt6899/android.hardware.graphics.allocator-V2-service-mediatek.mt6899',
         'vendor/lib64/libaimemc.so',
