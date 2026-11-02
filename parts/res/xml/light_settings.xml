@@ -9,6 +9,14 @@
         android:title="@string/light_enable_title"
         android:defaultValue="false" />
 
+    <com.android.settingslib.widget.SliderPreference
+        android:key="light_brightness"
+        android:title="@string/light_brightness_title"
+        android:summary="@string/light_brightness_summary"
+        android:defaultValue="80"
+        android:max="255"
+        settings:min="80" />
+
     <PreferenceCategory
         android:key="light_category_standalone"
         android:title="@string/light_standalone_title"

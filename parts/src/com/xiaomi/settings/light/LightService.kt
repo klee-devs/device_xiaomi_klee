@@ -73,6 +73,10 @@ class LightService : Service() {
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         when (key) {
+            "light_brightness" -> {
+                val level = sharedPreferences.getInt("light_brightness", LedManager.DEFAULT_BRIGHTNESS)
+                ledHandler?.post { LedManager.setBrightnessLevel(level) }
+            }
             "light_enable",
             "light_music_enable",
             "light_music_style",
@@ -210,6 +214,9 @@ class LightService : Service() {
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        LedManager.setBrightnessLevel(
+            sharedPreferences.getInt("light_brightness", LedManager.DEFAULT_BRIGHTNESS),
+        )
         telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -353,11 +360,13 @@ class LightService : Service() {
                         }
                     }
 
-                    // Map the dominant magnitude to brightness 0..80.
-                    // Magnitudes typically range from 0 to ~128+.
-                    var brightness = (magnitudes[maxIdx] * 0.8f).toInt()
-                    if (brightness > 80) brightness = 80
-                    if (brightness < 0) brightness = 0
+                    // Preserve the existing 0..80 response at the default level,
+                    // scaling it to the user's configured maximum.
+                    val maxBrightness = LedManager.getBrightnessLevel()
+                    val baseBrightness = (magnitudes[maxIdx] * 0.8f).toInt().coerceIn(0, 80)
+                    val brightness = (baseBrightness * maxBrightness / 80f)
+                        .toInt()
+                        .coerceIn(0, maxBrightness)
 
                     visualizerHandler?.removeCallbacksAndMessages(null)
                     visualizerHandler?.post {

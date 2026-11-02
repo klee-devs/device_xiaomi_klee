@@ -5,7 +5,13 @@ import com.xiaomi.settings.utils.writeLine
 
 object LedManager {
     private const val TAG = "LedManager"
-    
+
+    const val DEFAULT_BRIGHTNESS = 80
+    private const val MIN_BRIGHTNESS = 80
+    private const val MAX_BRIGHTNESS = 255
+
+    @Volatile private var brightnessLevel = DEFAULT_BRIGHTNESS
+
     private const val LED_PATH = "/sys/class/leds/aw21024_led"
     private const val HWEN_NODE = "$LED_PATH/hwen"
     private const val RUN_NODE = "$LED_PATH/run"
@@ -24,6 +30,19 @@ object LedManager {
     private var lastOffMs = -1
     private var lastRepeat = false
     private var lastOffTimeMs = 0L
+
+    fun getBrightnessLevel(): Int = brightnessLevel
+
+    fun setBrightnessLevel(value: Int) {
+        val level = value.coerceIn(MIN_BRIGHTNESS, MAX_BRIGHTNESS)
+        if (brightnessLevel == level) return
+
+        brightnessLevel = level
+        Log.i(TAG, "setBrightnessLevel: $level")
+        if (isActive) {
+            writeLine(BRIGHTNESS_NODE, level.toString())
+        }
+    }
 
     private fun powerOnIfNeeded(runMode: Int) {
         if (!isActive) {
@@ -53,13 +72,13 @@ object LedManager {
     private fun setDeviceColor(colorHex: String) {
         writeLine(RGBCOLOR_NODE, "0x04 0x$colorHex")
         writeLine(RGBCOLOR_NODE, "0x03 0x$colorHex")
-        writeLine(BRIGHTNESS_NODE, "80")
+        writeLine(BRIGHTNESS_NODE, brightnessLevel.toString())
     }
 
     private fun setDeviceDualColor(topColorHex: String, bottomColorHex: String) {
         writeLine(RGBCOLOR_NODE, "0x04 0x$bottomColorHex")
         writeLine(RGBCOLOR_NODE, "0x03 0x$topColorHex")
-        writeLine(BRIGHTNESS_NODE, "80")
+        writeLine(BRIGHTNESS_NODE, brightnessLevel.toString())
     }
 
     fun turnOff() {
@@ -150,6 +169,7 @@ object LedManager {
             }
             Log.i(TAG, "setGradientSweep: enable=$enable")
             powerOnIfNeeded(3) // 3 = gradient
+            writeLine(BRIGHTNESS_NODE, brightnessLevel.toString())
             writeLine(GRADIENT_NODE, "1")
         } else {
             turnOff()

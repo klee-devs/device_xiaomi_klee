@@ -154,6 +154,8 @@
     <string name="light_settings_title">Back Light Effects</string>
     <string name="light_settings_summary">Configure RGB LED on the back</string>
     <string name="light_enable_title">Enable back light effects</string>
+    <string name="light_brightness_title">Back light brightness</string>
+    <string name="light_brightness_summary">Set the brightness for all rear LED effects</string>
 
     <string name="light_incoming_call_title">Incoming calls</string>
     <string name="light_incoming_call_summary">Pulse LED during incoming calls</string>
