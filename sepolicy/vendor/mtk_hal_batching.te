@@ -1,0 +1,15 @@
+hal_attribute(mtk_batching)
+
+type mtk_hal_batching, domain;
+type mtk_hal_batching_exec, exec_type, file_type, vendor_file_type;
+
+hal_server_domain(mtk_hal_batching, hal_mtk_batching)
+init_daemon_domain(mtk_hal_batching)
+binder_use(mtk_hal_batching)
+
+hal_attribute_service(hal_mtk_batching, mtk_hal_batching_service)
+hal_client_domain(em_app, hal_mtk_batching)
+get_prop(em_app, vendor_mtk_flp_prop)
+
+allow mtk_hal_batching aol_flp_device:chr_file { ioctl read write getattr lock append open watch watch_reads };
+get_prop(mtk_hal_batching, vendor_mtk_flp_prop)

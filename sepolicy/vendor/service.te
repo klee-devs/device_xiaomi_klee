@@ -1,6 +1,9 @@
 # Display
 type vendor_hal_displayfeature_service, protected_service, service_manager_type;
 
+# GNSS batching HAL
+type mtk_hal_batching_service, protected_service, hal_service_type, service_manager_type;
+
 # Dolby DMS HAL
 type hal_aidl_dms_service, protected_service, service_manager_type, hal_service_type;
 

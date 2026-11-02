@@ -1,6 +1,9 @@
 # Audio
 vendor.xiaomi.hardware.mediaeventgatherservice.IMediaGather/default    u:object_r:hal_audio_service:s0
 
+# GNSS batching
+vendor.mediatek.hardware.gnss.batching.IMtkGnssBatching/default u:object_r:mtk_hal_batching_service:s0
+
 # Camera
 vendor.xiaomi.hardware.aidlbgservice.IBGService/default           u:object_r:hal_camera_service:s0
 vendor.xiaomi.hardware.camera.injection.ICameraInjectionService/default u:object_r:hal_camera_service:s0

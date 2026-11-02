@@ -1538,9 +1538,11 @@ vendor/etc/vintf/manifest/android.hardware.gatekeeper-service.mitee.xml
 
 # GNSS
 vendor/bin/hw/android.hardware.gnss-service.mediatek
+vendor/bin/hw/vendor.mediatek.hardware.gnss-service
 vendor/bin/mnld
 vendor/bin/mtk_agpsd
 vendor/etc/init/android.hardware.gnss-service.mediatek.rc
+vendor/etc/init/mtk_gnss.rc
 # Klee 308 loads the GNSS power rail module
 vendor/etc/init/init.mi_gps_pwr.rc
 vendor/etc/init/init.gps_pwr.rc
@@ -1548,6 +1550,7 @@ vendor/etc/init/init.gps_scp.rc
 vendor/etc/init/mtk_agpsd_p.rc
 vendor/etc/vintf/manifest/gnss-default.xml:vendor/etc/vintf/manifest/gnss-mtk-default.xml
 vendor/etc/vintf/manifest/gnss-mtk.xml
+vendor/etc/vintf/manifest/mtkgnss-batching.xml
 vendor/lib64/hw/android.hardware.gnss-impl-mediatek.so
 vendor/lib64/hw/gps.default.so
 vendor/lib64/hw/mtkflp.default.so
@@ -1556,7 +1559,7 @@ vendor/lib64/hw/vendor.mediatek.hardware.gnss-impl.so
 vendor/lib64/hw/vendor.mediatek.hardware.gnss.batching-impl.so
 vendor/lib64/libapmonitor_vendor.so
 vendor/lib64/mt6899/libDR.so;SYMLINK=vendor/lib64/libDR.so
-vendor/lib64/mt6899/libmnl.so:vendor/lib64/libmnl-v33.so;FIX_SONAME
+vendor/lib64/mt6899/libmnl.so:vendor/lib64/mt6899/libmnld.so;FIX_SONAME;SYMLINK=vendor/lib64/libmnld.so
 vendor/lib64/mtk_lbs_service-impl.so
 vendor/lib64/vendor.mediatek.hardware.apmonitor-V1-ndk.so
 vendor/lib64/vendor.mediatek.hardware.apmonitor@2.0.so
