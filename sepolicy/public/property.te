@@ -1,0 +1,2 @@
+# Low-light fingerprint preference is system-owned and read by the vendor HAL.
+system_public_prop(klee_udfps_low_light_prop)

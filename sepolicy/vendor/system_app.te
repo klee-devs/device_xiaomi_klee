@@ -7,7 +7,7 @@ rw_dir_file(system_app, vendor_cit_data_file)
 
 # Fingerprint
 get_prop(system_app, vendor_fingerprint_prop)
-set_prop(system_app, vendor_udfps_low_light_prop)
+set_prop(system_app, klee_udfps_low_light_prop)
 
 # DisplayFeature
 hal_client_domain(system_app, vendor_hal_displayfeature)

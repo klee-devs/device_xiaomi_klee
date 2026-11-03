@@ -1,0 +1,2 @@
+# Low-light fingerprint illumination preference
+persist.sys.xiaomi.udfps_low_light u:object_r:klee_udfps_low_light_prop:s0 exact bool

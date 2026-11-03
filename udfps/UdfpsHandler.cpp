@@ -69,7 +69,7 @@ using ::aidl::android::hardware::biometrics::fingerprint::AcquiredInfo;
 
 namespace {
 
-constexpr char kLowLightFodProperty[] = "persist.vendor.xiaomi.udfps_low_light";
+constexpr char kLowLightFodProperty[] = "persist.sys.xiaomi.udfps_low_light";
 
 template <typename T>
 static void set(const std::string& path, const T& value) {

@@ -84,7 +84,7 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
         private const val KEY_CORE_CONTROL = "parts_core_control"
         private const val KEY_CHARGING_CONTROL = "parts_charging_control"
         private const val KEY_LOW_LIGHT_FOD = "parts_low_light_fingerprint"
-        private const val PROP_LOW_LIGHT_FOD = "persist.vendor.xiaomi.udfps_low_light"
+        private const val PROP_LOW_LIGHT_FOD = "persist.sys.xiaomi.udfps_low_light"
         private const val TAG = "XiaomiParts"
     }
 }
