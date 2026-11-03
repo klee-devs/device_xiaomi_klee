@@ -20,7 +20,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.service.quicksettings.Tile
@@ -28,7 +27,6 @@ import android.service.quicksettings.TileService
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.xiaomi.settings.R
-import com.xiaomi.settings.utils.writeLine
 
 class TouchSamplingTileService : TileService() {
 
@@ -103,7 +101,6 @@ class TouchSamplingTileService : TileService() {
             cancelTouchSamplingNotification()
         }
 
-        writeTouchSamplingStateToFile(if (newState) 1 else 0)
     }
 
     private fun isTouchSamplingEnabled(): Boolean {
@@ -127,12 +124,6 @@ class TouchSamplingTileService : TileService() {
         sharedPref.edit()
             .putBoolean(TouchSamplingSettingsFragment.HTSR_STATE, state)
             .apply()
-    }
-
-    private fun writeTouchSamplingStateToFile(state: Int) {
-        if (!writeLine(TouchSamplingUtils.HTSR_FILE, state.toString())) {
-            Log.e(TAG, "Failed to write touch sampling state to file")
-        }
     }
 
     private fun setupNotificationChannel() {
@@ -187,29 +178,4 @@ class TouchSamplingTileService : TileService() {
         private const val NOTIFICATION_ID = 3
     }
 
-    class BootCompletedReceiver : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-
-                Log.d(TAG, "Boot completed - reinitializing tile state")
-
-                val sharedPref = context.getSharedPreferences(
-                    TouchSamplingSettingsFragment.SHAREDHTSR,
-                    Context.MODE_PRIVATE
-                )
-
-                val enabled = sharedPref.getBoolean(
-                    TouchSamplingSettingsFragment.HTSR_STATE,
-                    false
-                )
-
-                val state = if (enabled) 1 else 0
-
-                if (!writeLine(TouchSamplingUtils.HTSR_FILE, state.toString())) {
-                    Log.e(TAG, "Failed to write touch sampling state during boot")
-                }
-            }
-        }
-    }
 }

@@ -188,7 +188,7 @@ class TouchSamplingService : Service() {
     }
 
     /**
-     * Applies the given touch sampling rate state directly to the hardware file.
+     * Applies the requested touch mode through Xiaomi's ITouchFeature service.
      *
      * @param state 1 to enable high touch sampling rate, 0 to disable it.
      */
