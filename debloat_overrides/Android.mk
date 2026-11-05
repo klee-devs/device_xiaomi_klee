@@ -26,15 +26,12 @@ LOCAL_OVERRIDES_MODULES := \
     LiveWallpapersPicker \
     BtHelper \
     BtHelperAdapter \
-    EmergencyInfo \
     Updater \
-    OmniJaws \
     Gramophone \
     ANGLE \
     AppSearchAiSealConfig \
     SimAppDialog \
     BackupRestoreConfirmation \
     Datura \
-    GameSpace \
     Seedvault
 include $(BUILD_PREBUILT)
