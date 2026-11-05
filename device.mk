@@ -142,9 +142,9 @@ PRODUCT_PACKAGES += \
     libvolumesw \
     libextensioneffect
 
-# Match AudioService's media slider to the MediaTek 0-30 gain table.
+# Map the MediaTek 0-30 gain range across the 15-step media slider.
 PRODUCT_SYSTEM_PROPERTIES += \
-    ro.config.media_vol_steps=30
+    ro.config.media_vol_steps=15
 
 # Enable MediaTek SuperVolume for media, ringtone, and notification streams.
 # The volume service applies the scene only when routed to the built-in speaker.
