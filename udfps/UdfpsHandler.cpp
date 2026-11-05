@@ -65,8 +65,6 @@ typedef struct {
 #define TOUCH_IOC_SELECT_TOUCH_ID _IOW(TOUCH_MAGIC, SELECT_TOUCH_ID, int)
 #define TOUCH_IOC_COMMON_DATA _IOW(TOUCH_MAGIC, COMMON_DATA_CMD, touch_base)
 
-using ::aidl::android::hardware::biometrics::fingerprint::AcquiredInfo;
-
 namespace {
 
 constexpr char kLowLightFodProperty[] = "persist.sys.xiaomi.udfps_low_light";
@@ -199,6 +197,10 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
         mAuthCompleted.store(false);
         mAuthGeneration.fetch_add(1);
 
+        // Filter the FOD-area contact from pointer-down. Acquired messages can arrive
+        // late and must not re-arm this state after pointer-up.
+        setFodStatus(FOD_STATUS_ON);
+
         const bool lowLightFodEnabled =
                 android::base::GetBoolProperty(kLowLightFodProperty, false);
         mLowLightFodEnabled.store(lowLightFodEnabled);
@@ -222,11 +224,8 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
 
     void onAcquired(int32_t result, int32_t vendorCode) {
         LOG(DEBUG) << __func__ << " result: " << result << " vendorCode: " << vendorCode;
-        // AcquiredInfo describes a sample, not a physical pointer-up. Releasing the
-        // FOD press here can let the still-held finger through to the app underneath.
-        if (vendorCode == 21) {
-            setFodStatus(FOD_STATUS_ON);
-        }
+        // Acquired messages can arrive asynchronously, including after pointer-up.
+        // Pointer-down/up callbacks alone own the FOD touch-filter state.
     }
 
     void onAuthenticationSucceeded() {
