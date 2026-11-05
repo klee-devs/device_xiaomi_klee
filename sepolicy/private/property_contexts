@@ -1,2 +1,6 @@
+# MediaTek A2DP offload coexistence tuning
+persist.bluetooth.a2dp_offload.coex_buf_count u:object_r:bluetooth_a2dp_offload_prop:s0 exact int
+persist.bluetooth.a2dp_offload.mtk_coex u:object_r:bluetooth_a2dp_offload_prop:s0 exact bool
+
 # Low-light fingerprint illumination preference
 persist.sys.xiaomi.udfps_low_light u:object_r:klee_udfps_low_light_prop:s0 exact bool
