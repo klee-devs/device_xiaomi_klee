@@ -176,8 +176,7 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
                 LOG(DEBUG) << "received data: " << std::bitset<8>(value);
 
                 bool localHbmUiReady = value & LOCAL_HBM_UI_READY;
-                bool lowBrightnessCapture =
-                        mLowLightFodEnabled.load() && (value & FOD_LOW_BRIGHTNESS_CAPTURE);
+                const bool lowBrightnessCapture = mLowLightFodEnabled.load();
 
                 // Ignore late panel-ready notifications after authentication. A late
                 // NIT_FOD command can turn the FOD glow back on after it was cleared.
@@ -208,6 +207,7 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
     }
 
     void onFingerUp() override {
+        mAuthGeneration.fetch_add(1);
         setFingerDown(false);
         setFodStatus(FOD_STATUS_OFF);
     }
@@ -222,22 +222,8 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
 
     void onAcquired(int32_t result, int32_t vendorCode) {
         LOG(DEBUG) << __func__ << " result: " << result << " vendorCode: " << vendorCode;
-        switch (static_cast<AcquiredInfo>(result)) {
-            case AcquiredInfo::GOOD:
-            case AcquiredInfo::PARTIAL:
-            case AcquiredInfo::INSUFFICIENT:
-            case AcquiredInfo::SENSOR_DIRTY:
-            case AcquiredInfo::TOO_SLOW:
-            case AcquiredInfo::TOO_FAST:
-            case AcquiredInfo::TOO_DARK:
-            case AcquiredInfo::TOO_BRIGHT:
-            case AcquiredInfo::IMMOBILE:
-            case AcquiredInfo::LIFT_TOO_SOON:
-		onFingerUp();
-                break;
-            default:
-                break;
-        }
+        // AcquiredInfo describes a sample, not a physical pointer-up. Releasing the
+        // FOD press here can let the still-held finger through to the app underneath.
         if (vendorCode == 21) {
             setFodStatus(FOD_STATUS_ON);
         }
@@ -252,7 +238,9 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
         std::thread([this, authGeneration]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
             if (mAuthGeneration.load() == authGeneration && mAuthCompleted.load()) {
-                onFingerUp();
+                // Turn off illumination without telling the touch driver that the
+                // still-held FOD pointer has been released.
+                setLocalHbmBrightness(LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP);
             }
         }).detach();
     }
@@ -260,7 +248,9 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
     void onAuthenticationFailed() {
         mAuthCompleted.store(false);
         mAuthGeneration.fetch_add(1);
-        onFingerUp();
+        // A failed sample can finish before the physical pointer-up. Stop the glow,
+        // but keep FOD touch filtering until onFingerUp() or cancel().
+        setLocalHbmBrightness(LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP);
     }
 
   private:
@@ -293,15 +283,25 @@ class XiaomiKleeUdfpsHandler : public UdfpsHandler {
         ioctl(touch_fd_.get(), TOUCH_IOC_COMMON_DATA, &data);
         set(FOD_STATUS_PATH, value);
     }
+    void setLocalHbmBrightness(uint32_t value) {
+        disp_local_hbm_req req = {};
+        req.base.flag = 0;
+        req.base.disp_id = MI_DISP_PRIMARY;
+        req.local_hbm_value = value;
+        if (ioctl(disp_fd_.get(), MI_DISP_IOCTL_SET_LOCAL_HBM, &req) < 0) {
+            PLOG(WARNING) << "Failed to set local HBM brightness " << value;
+        }
+    }
+
     void setFingerDown(
             bool pressed, uint32_t offValue = LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP) {
         mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS,
                         pressed ? PARAM_FOD_PRESSED : PARAM_FOD_RELEASED);
-        disp_local_hbm_req req;
-        req.base.flag = 0;
-        req.base.disp_id = MI_DISP_PRIMARY;
-        req.local_hbm_value = pressed ? LHBM_TARGET_BRIGHTNESS_WHITE_1000NIT : offValue;
-        ioctl(disp_fd_.get(), MI_DISP_IOCTL_SET_LOCAL_HBM, &req);
+        const uint32_t brightness = pressed
+                ? (mLowLightFodEnabled.load() ? LHBM_TARGET_BRIGHTNESS_WHITE_110NIT
+                                              : LHBM_TARGET_BRIGHTNESS_WHITE_1000NIT)
+                : offValue;
+        setLocalHbmBrightness(brightness);
     }
 };
 
