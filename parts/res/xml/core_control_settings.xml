@@ -1,42 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2025 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="@string/core_control_title">
+    android:title="Core &amp; GPU Control">
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_0"
-        android:title="@string/core_0" />
+    <PreferenceCategory
+        android:key="little_cluster"
+        android:title="Efficiency Cluster (Cortex-A725 @ 2.20 GHz)">
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_1"
-        android:title="@string/core_1" />
+        <SwitchPreferenceCompat
+            android:key="core_0"
+            android:title="CPU Core 0"
+            android:defaultValue="true" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_2"
-        android:title="@string/core_2" />
+        <SwitchPreferenceCompat
+            android:key="core_1"
+            android:title="CPU Core 1"
+            android:defaultValue="true" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_3"
-        android:title="@string/core_3" />
+        <SwitchPreferenceCompat
+            android:key="core_2"
+            android:title="CPU Core 2"
+            android:defaultValue="true" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_4"
-        android:title="@string/core_4" />
+        <SwitchPreferenceCompat
+            android:key="core_3"
+            android:title="CPU Core 3"
+            android:defaultValue="true" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_5"
-        android:title="@string/core_5" />
+    </PreferenceCategory>
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_6"
-        android:title="@string/core_6" />
+    <PreferenceCategory
+        android:key="mid_cluster"
+        android:title="Performance Cluster (Cortex-A725 @ 3.20 GHz)">
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_7"
-        android:title="@string/core_7" />
+        <SwitchPreferenceCompat
+            android:key="core_4"
+            android:title="CPU Core 4"
+            android:defaultValue="true" />
 
-    <com.android.settingslib.widget.FooterPreference
-        android:key="footer"
-        android:title="@string/core_control_description"
-        android:selectable="false" />
+        <SwitchPreferenceCompat
+            android:key="core_5"
+            android:title="CPU Core 5"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="core_6"
+            android:title="CPU Core 6"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="big_cluster"
+        android:title="Prime Cluster (Cortex-A725 @ 3.40 GHz)">
+
+        <SwitchPreferenceCompat
+            android:key="core_7"
+            android:title="CPU Core 7 (Prime)"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="gpu_ged_category"
+        android:title="GPU &amp; MediaTek GED Tuning">
+
+        <SwitchPreferenceCompat
+            android:key="ged_boost_enable"
+            android:title="MediaTek GED Boost"
+            android:summary="Enable GPU Extension Device DVFS boost governor"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="ged_game_mode"
+            android:title="GED Game Mode (gx_game_mode)"
+            android:summary="Prioritize frame-pacing and low-latency GPU scheduling"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="ged_gpu_dvfs_enable"
+            android:title="Dynamic GPU DVFS"
+            android:summary="Allow dynamic Mali-G720 frequency scaling under GED"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="ged_gpu_boost_level"
+            android:title="Aggressive GPU Boost Level"
+            android:summary="Lock GED HAL boost floor to maximum (101)"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
