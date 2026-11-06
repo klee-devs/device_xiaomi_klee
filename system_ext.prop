@@ -6,6 +6,8 @@ ro.audio.usb.period_us=16000
 ro.camera.sound.forced=0
 
 # Radio
+persist.radio.is_vonr_enabled_0=true
+persist.radio.is_vonr_enabled_1=true
 ro.fota.oem=Xiaomi
 ro.radio.device_type=1
 ro.vendor.imeisv=03
