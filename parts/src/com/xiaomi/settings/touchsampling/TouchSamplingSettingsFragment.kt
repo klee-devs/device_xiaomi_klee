@@ -16,6 +16,7 @@
 
 package com.xiaomi.settings.touchsampling
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -60,17 +61,34 @@ class TouchSamplingSettingsFragment : SettingsBasePreferenceFragment(), Preferen
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val htsrEnabled = mPrefs?.getBoolean(HTSR_STATE, false) ?: false
+        mHTSRPreference?.isChecked = htsrEnabled
+        val autoEnable = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .getBoolean(HTSR_AUTO_ENABLE_KEY, false)
+        mAutoEnablePreference?.isChecked = autoEnable
+    }
+
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
         when (preference.key) {
             HTSR_ENABLE_KEY -> {
                 val isEnabled = newValue as Boolean
                 mPrefs!!.edit().putBoolean(HTSR_STATE, isEnabled).apply()
+                if (!isEnabled) {
+                    val nm = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                    nm?.cancel(TouchSamplingTileService.NOTIFICATION_ID)
+                }
                 val autoEnable = PreferenceManager.getDefaultSharedPreferences(requireContext())
                     .getBoolean(HTSR_AUTO_ENABLE_KEY, false)
                 startTouchSamplingService(isEnabled || autoEnable)
             }
             HTSR_AUTO_ENABLE_KEY -> {
                 val autoEnable = newValue as Boolean
+                PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .edit()
+                    .putBoolean(HTSR_AUTO_ENABLE_KEY, autoEnable)
+                    .apply()
                 val htsrEnabled = mPrefs!!.getBoolean(HTSR_STATE, false)
                 startTouchSamplingService(htsrEnabled || autoEnable)
             }
