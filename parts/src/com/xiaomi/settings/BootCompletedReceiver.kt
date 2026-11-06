@@ -11,15 +11,14 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.os.UserHandle
-import android.os.IBinder
 import android.util.Log
-import android.view.SurfaceControl;
 import android.view.Display
 import android.view.Display.HdrCapabilities
+import com.xiaomi.settings.battery.ChargingLimitService
+import com.xiaomi.settings.corecontrol.CoreControlFragment
 import com.xiaomi.settings.display.ColorService
 import com.xiaomi.settings.touchsampling.TouchSamplingService
 import com.xiaomi.settings.touchsampling.TouchSamplingTileService
-import com.xiaomi.settings.battery.ChargingLimitService
 
 /** Everything begins at boot. */
 class BootCompletedReceiver : BroadcastReceiver() {
@@ -35,21 +34,11 @@ class BootCompletedReceiver : BroadcastReceiver() {
             Intent.ACTION_BOOT_COMPLETED -> onBootCompleted(context)
             Intent.ACTION_LOCKED_BOOT_COMPLETED -> onLockedBootCompleted(context)
         }
-
-        // Override HDR types
-        val displayManager = context.getSystemService(DisplayManager::class.java)
-        displayManager.overrideHdrTypes(
-            Display.DEFAULT_DISPLAY,
-            intArrayOf(
-                HdrCapabilities.HDR_TYPE_DOLBY_VISION,
-                HdrCapabilities.HDR_TYPE_HDR10,
-                HdrCapabilities.HDR_TYPE_HLG,
-                HdrCapabilities.HDR_TYPE_HDR10_PLUS
-            )
-        )
     }
 
     private fun onBootCompleted(context: Context) {
+        // Restore MediaTek GED & GPU settings after user unlock
+        CoreControlFragment.restoreSettings(context)
     }
 
     private fun onLockedBootCompleted(context: Context) {
@@ -59,7 +48,7 @@ class BootCompletedReceiver : BroadcastReceiver() {
         // Touch Sampling
         context.startServiceAsUser(Intent(context, TouchSamplingService::class.java), UserHandle.CURRENT)
 
-        // Touch Sampling qs
+        // Touch Sampling QS
         context.startServiceAsUser(
             Intent(context, TouchSamplingTileService::class.java),
             UserHandle.CURRENT
@@ -67,12 +56,15 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
         // Override HDR types to enable Dolby Vision
         val displayManager = context.getSystemService(DisplayManager::class.java)
-        displayManager?.overrideHdrTypes(Display.DEFAULT_DISPLAY, intArrayOf(
-            HdrCapabilities.HDR_TYPE_DOLBY_VISION,
-            HdrCapabilities.HDR_TYPE_HDR10,
-            HdrCapabilities.HDR_TYPE_HLG,
-            HdrCapabilities.HDR_TYPE_HDR10_PLUS
-        ))
+        displayManager?.overrideHdrTypes(
+            Display.DEFAULT_DISPLAY,
+            intArrayOf(
+                HdrCapabilities.HDR_TYPE_DOLBY_VISION,
+                HdrCapabilities.HDR_TYPE_HDR10,
+                HdrCapabilities.HDR_TYPE_HLG,
+                HdrCapabilities.HDR_TYPE_HDR10_PLUS
+            )
+        )
 
         // Light Service
         val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
