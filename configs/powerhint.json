@@ -15,16 +15,16 @@
         "1600000000",
         "800000000"
       ],
+      "DefaultIndex": 9,
       "ResetOnInit": true,
       "Comments": [
-        "It is userspace gov, powerhal will have exclusive and direct control of the freq"
+        "Userspace gov: index 0 is highest bandwidth boost, index 9 (800000000) is default idle floor"
       ]
     },
     {
       "Name": "GpuPwrLevel",
       "Path": "/proc/gpufreqv2/fix_target_opp_index",
       "Values": [
-        "-1",
         "0",
         "1",
         "2",
@@ -65,53 +65,14 @@
         "37",
         "38",
         "39",
-        "40"
+        "40",
+        "-1"
       ],
+      "DefaultIndex": 41,
       "ResetOnInit": true,
-      "DefaultIndex": 0,
       "Comments": [
-        "[-1] normal",
-        "[00] freq: 1300000, volt:  93750, vsram:  93750",
-        "[01] freq: 1274000, volt:  92500, vsram:  92500",
-        "[02] freq: 1248000, volt:  91875, vsram:  91875",
-        "[03] freq: 1222000, volt:  91250, vsram:  91250",
-        "[04] freq: 1196000, volt:  90000, vsram:  90000",
-        "[05] freq: 1170000, volt:  89375, vsram:  89375",
-        "[06] freq: 1144000, volt:  88750, vsram:  88750",
-        "[07] freq: 1118000, volt:  87500, vsram:  87500",
-        "[08] freq: 1092000, volt:  86875, vsram:  86875",
-        "[09] freq: 1066000, volt:  86250, vsram:  86250",
-        "[10] freq: 1040000, volt:  85000, vsram:  85000",
-        "[11] freq: 1014000, volt:  84375, vsram:  84375",
-        "[12] freq:  988000, volt:  83750, vsram:  83750",
-        "[13] freq:  962000, volt:  82500, vsram:  82500",
-        "[14] freq:  936000, volt:  81875, vsram:  81875",
-        "[15] freq:  910000, volt:  81250, vsram:  81250",
-        "[16] freq:  884000, volt:  80000, vsram:  80000",
-        "[17] freq:  858000, volt:  79375, vsram:  79375",
-        "[18] freq:  832000, volt:  78750, vsram:  78750",
-        "[19] freq:  806000, volt:  77500, vsram:  77500",
-        "[20] freq:  780000, volt:  76875, vsram:  76875",
-        "[21] freq:  754000, volt:  76250, vsram:  76250",
-        "[22] freq:  728000, volt:  75000, vsram:  75000",
-        "[23] freq:  702000, volt:  74375, vsram:  75000",
-        "[24] freq:  676000, volt:  73750, vsram:  75000",
-        "[25] freq:  650000, volt:  72500, vsram:  75000",
-        "[26] freq:  624000, volt:  71875, vsram:  75000",
-        "[27] freq:  598000, volt:  71250, vsram:  75000",
-        "[28] freq:  572000, volt:  70000, vsram:  75000",
-        "[29] freq:  546000, volt:  69375, vsram:  75000",
-        "[30] freq:  520000, volt:  68750, vsram:  75000",
-        "[31] freq:  494000, volt:  67500, vsram:  75000",
-        "[32] freq:  468000, volt:  66875, vsram:  75000",
-        "[33] freq:  442000, volt:  66250, vsram:  75000",
-        "[34] freq:  416000, volt:  65000, vsram:  75000",
-        "[35] freq:  390000, volt:  64375, vsram:  75000",
-        "[36] freq:  364000, volt:  63750, vsram:  75000",
-        "[37] freq:  338000, volt:  62500, vsram:  75000",
-        "[38] freq:  312000, volt:  61875, vsram:  75000",
-        "[39] freq:  286000, volt:  61250, vsram:  75000",
-        "[40] freq:  260000, volt:  60000, vsram:  75000"
+        "fix_target_opp_index is a HARD frequency lock, not a min_freq floor.",
+        "Keep DefaultIndex at 41 (-1 = dynamic DVFS enabled) and only lock to 0 in FIXED_PERFORMANCE."
       ]
     },
     {
@@ -165,6 +126,7 @@
         "600000",
         "480000"
       ],
+      "DefaultIndex": 18,
       "ResetOnInit": true
     },
     {
@@ -242,6 +204,7 @@
         "500000",
         "400000"
       ],
+      "DefaultIndex": 30,
       "ResetOnInit": true
     },
     {
@@ -249,7 +212,9 @@
       "Path": "/sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq",
       "Values": [
         "9999999",
+        "3400000",
         "3350000",
+        "3250000",
         "3200000",
         "3100000",
         "3050000",
@@ -289,7 +254,9 @@
       "Path": "/sys/devices/system/cpu/cpu7/cpufreq/scaling_min_freq",
       "Values": [
         "9999999",
+        "3400000",
         "3350000",
+        "3250000",
         "3200000",
         "3100000",
         "3050000",
@@ -321,44 +288,58 @@
         "500000",
         "400000"
       ],
+      "DefaultIndex": 33,
       "ResetOnInit": true
     },
     {
       "Name": "PMQoSCpuDmaLatency",
       "Path": "/dev/cpu_dma_latency",
       "Values": [
+        "0",
         "51",
-        "0"
+        "20000"
       ],
+      "DefaultIndex": 2,
       "HoldFd": true
     },
     {
       "Name": "UclampFGMin",
       "Path": "/dev/cpuctl/foreground/cpu.uclamp.min",
       "Values": [
-        "0",
+        "100",
+        "50",
+        "30",
         "15",
-        "30"
+        "0"
       ],
-      "DefaultIndex": 0,
+      "DefaultIndex": 4,
       "ResetOnInit": true
     },
     {
       "Name": "UclampTAMin",
       "Path": "/dev/cpuctl/top-app/cpu.uclamp.min",
       "Values": [
-        "0",
-        "30",
+        "100",
+        "60",
         "40",
-        "100"
+        "30",
+        "15",
+        "0"
       ],
-      "DefaultIndex": 0,
+      "DefaultIndex": 5,
       "ResetOnInit": true
     },
     {
       "Name": "CAMUClampBoost",
       "Path": "/dev/cpuctl/camera-daemon/cpu.uclamp.min",
-      "Values": ["100", "75", "50", "25", "0"],
+      "Values": [
+        "100",
+        "75",
+        "50",
+        "25",
+        "0"
+      ],
+      "DefaultIndex": 4,
       "ResetOnInit": true
     },
     {
@@ -368,6 +349,7 @@
         "0-3",
         "0-7"
       ],
+      "DefaultIndex": 1,
       "ResetOnInit": true
     },
     {
@@ -377,6 +359,7 @@
         "0-2",
         "0-6"
       ],
+      "DefaultIndex": 1,
       "ResetOnInit": true
     },
     {
@@ -386,14 +369,23 @@
         "0-2",
         "0-6"
       ],
+      "DefaultIndex": 1,
       "ResetOnInit": true
     },
     {
       "Name": "GPUBlockBoost",
       "Path": "/sys/kernel/ged/hal/gpu_boost_level",
-      "Values": ["101", "50", "0", "-1"],
-      "ResetOnInit": true,
-      "DefaultIndex": 2
+      "Values": [
+        "101",
+        "100",
+        "75",
+        "50",
+        "25",
+        "0",
+        "-1"
+      ],
+      "DefaultIndex": 5,
+      "ResetOnInit": true
     },
     {
       "Name": "PowerHALRenderingState",
@@ -402,6 +394,7 @@
         "EXPENSIVE_RENDERING",
         ""
       ],
+      "DefaultIndex": 1,
       "Type": "Property"
     },
     {
@@ -414,6 +407,7 @@
         "6",
         "8"
       ],
+      "DefaultIndex": 4,
       "Type": "Property"
     },
     {
@@ -424,81 +418,142 @@
         "0,1,2,3,4,5",
         "0,1,2,3,4,5,6,7"
       ],
+      "DefaultIndex": 2,
       "Type": "Property"
     }
   ],
-"Actions": [
+  "Actions": [
     {
       "PowerHint": "INTERACTION",
       "Node": "CPULittleClusterMinFreq",
-      "Duration": 1000,
-      "Value": "1300000"
+      "Duration": 500,
+      "Value": "1400000"
     },
     {
       "PowerHint": "INTERACTION",
       "Node": "CPUMidClusterMinFreq",
-      "Duration": 1000,
-      "Value": "1300000"
+      "Duration": 500,
+      "Value": "1600000"
+    },
+    {
+      "PowerHint": "INTERACTION",
+      "Node": "CPUBigClusterMinFreq",
+      "Duration": 250,
+      "Value": "1800000"
     },
     {
       "PowerHint": "INTERACTION",
       "Node": "UclampFGMin",
-      "Duration": 58,
+      "Duration": 250,
       "Value": "15"
     },
     {
       "PowerHint": "INTERACTION",
       "Node": "UclampTAMin",
-      "Duration": 58,
+      "Duration": 250,
       "Value": "40"
+    },
+    {
+      "PowerHint": "INTERACTION",
+      "Node": "GPUBlockBoost",
+      "Duration": 250,
+      "Value": "50"
+    },
+    {
+      "PowerHint": "DISPLAY_UPDATE_IMMINENT",
+      "Node": "CPULittleClusterMinFreq",
+      "Duration": 80,
+      "Value": "1400000"
+    },
+    {
+      "PowerHint": "DISPLAY_UPDATE_IMMINENT",
+      "Node": "CPUMidClusterMinFreq",
+      "Duration": 80,
+      "Value": "1600000"
+    },
+    {
+      "PowerHint": "DISPLAY_UPDATE_IMMINENT",
+      "Node": "UclampTAMin",
+      "Duration": 80,
+      "Value": "40"
+    },
+    {
+      "PowerHint": "DISPLAY_UPDATE_IMMINENT",
+      "Node": "GPUBlockBoost",
+      "Duration": 80,
+      "Value": "50"
     },
     {
       "PowerHint": "LAUNCH",
       "Node": "CPUBigClusterMinFreq",
-      "Duration": 2000,
-      "Value": "9999999"
+      "Duration": 1000,
+      "Value": "2800000"
     },
     {
       "PowerHint": "LAUNCH",
       "Node": "CPUMidClusterMinFreq",
-      "Duration": 2000,
-      "Value": "9999999"
+      "Duration": 1000,
+      "Value": "2500000"
     },
     {
       "PowerHint": "LAUNCH",
       "Node": "CPULittleClusterMinFreq",
-      "Duration": 2000,
-      "Value": "9999999"
+      "Duration": 1000,
+      "Value": "1800000"
     },
     {
       "PowerHint": "LAUNCH",
       "Node": "MemFreq",
-      "Duration": 2000,
+      "Duration": 1000,
       "Value": "9999999999"
     },
     {
       "PowerHint": "LAUNCH",
       "Node": "UclampTAMin",
-      "Duration": 2000,
+      "Duration": 1000,
       "Value": "100"
     },
     {
       "PowerHint": "LAUNCH",
+      "Node": "UclampFGMin",
+      "Duration": 1000,
+      "Value": "50"
+    },
+    {
+      "PowerHint": "LAUNCH",
       "Node": "GPUBlockBoost",
-      "Duration": 5000,
+      "Duration": 1000,
       "Value": "101"
     },
     {
       "PowerHint": "LAUNCH",
-      "Node": "GpuPwrLevel",
-      "Duration": 5000,
-      "Value": "6"
+      "Node": "PMQoSCpuDmaLatency",
+      "Duration": 1000,
+      "Value": "0"
+    },
+    {
+      "PowerHint": "LAUNCH",
+      "Node": "Dex2oatThreads",
+      "Duration": 1000,
+      "Value": "4"
+    },
+    {
+      "PowerHint": "LAUNCH",
+      "Node": "Dex2oatCPUSet",
+      "Duration": 1000,
+      "Value": "0,1,2,3"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
       "Node": "GpuPwrLevel",
       "Duration": 0,
       "Value": "0"
+    },
+    {
+      "PowerHint": "FIXED_PERFORMANCE",
+      "Node": "GPUBlockBoost",
+      "Duration": 0,
+      "Value": "101"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
@@ -549,34 +604,94 @@
       "Value": "9999999999"
     },
     {
+      "PowerHint": "FIXED_PERFORMANCE",
+      "Node": "PMQoSCpuDmaLatency",
+      "Duration": 0,
+      "Value": "0"
+    },
+    {
       "PowerHint": "CAMERA_LAUNCH",
       "Node": "CAMUClampBoost",
-      "Duration": 1000,
+      "Duration": 1500,
       "Value": "100"
     },
     {
       "PowerHint": "CAMERA_LAUNCH",
       "Node": "MemFreq",
-      "Duration": 1000,
+      "Duration": 1500,
       "Value": "9999999999"
     },
     {
       "PowerHint": "CAMERA_LAUNCH",
       "Node": "CPUBigClusterMinFreq",
-      "Duration": 1000,
+      "Duration": 1500,
+      "Value": "2400000"
+    },
+    {
+      "PowerHint": "CAMERA_LAUNCH",
+      "Node": "CPUMidClusterMinFreq",
+      "Duration": 1500,
       "Value": "2200000"
+    },
+    {
+      "PowerHint": "CAMERA_LAUNCH",
+      "Node": "CPULittleClusterMinFreq",
+      "Duration": 1500,
+      "Value": "1600000"
+    },
+    {
+      "PowerHint": "CAMERA_LAUNCH",
+      "Node": "Dex2oatThreads",
+      "Duration": 1500,
+      "Value": "4"
+    },
+    {
+      "PowerHint": "CAMERA_LAUNCH",
+      "Node": "Dex2oatCPUSet",
+      "Duration": 1500,
+      "Value": "0,1,2,3"
+    },
+    {
+      "PowerHint": "CAMERA_SHOT",
+      "Node": "CAMUClampBoost",
+      "Duration": 1000,
+      "Value": "100"
+    },
+    {
+      "PowerHint": "CAMERA_SHOT",
+      "Node": "MemFreq",
+      "Duration": 1000,
+      "Value": "9999999999"
+    },
+    {
+      "PowerHint": "CAMERA_SHOT",
+      "Node": "CPUBigClusterMinFreq",
+      "Duration": 1000,
+      "Value": "2800000"
+    },
+    {
+      "PowerHint": "CAMERA_SHOT",
+      "Node": "CPUMidClusterMinFreq",
+      "Duration": 1000,
+      "Value": "2500000"
+    },
+    {
+      "PowerHint": "AUDIO_LAUNCH",
+      "Node": "CPULittleClusterMinFreq",
+      "Duration": 500,
+      "Value": "1400000"
+    },
+    {
+      "PowerHint": "AUDIO_LAUNCH",
+      "Node": "PMQoSCpuDmaLatency",
+      "Duration": 500,
+      "Value": "51"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "PowerHALRenderingState",
       "Duration": 0,
       "Value": "EXPENSIVE_RENDERING"
-    },
-    {
-      "PowerHint": "EXPENSIVE_RENDERING",
-      "Node": "GpuPwrLevel",
-      "Duration": 0,
-      "Value": "10"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
@@ -588,30 +703,31 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "CPUBigClusterMinFreq",
       "Duration": 0,
-      "Value": "2200000"
+      "Value": "2000000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "CPUMidClusterMinFreq",
       "Duration": 0,
-      "Value": "2000000"
+      "Value": "1800000"
+    },
+    {
+      "PowerHint": "EXPENSIVE_RENDERING",
+      "Node": "CPULittleClusterMinFreq",
+      "Duration": 0,
+      "Value": "1400000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "UclampFGMin",
       "Duration": 0,
-      "Value": "30"
+      "Value": "15"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "UclampTAMin",
       "Duration": 0,
       "Value": "30"
-    },
-    {
-      "PowerHint": "EXPENSIVE_RENDERING",
-      "Type": "EndHint",
-      "Value": "INTERACTION"
     },
     {
       "PowerHint": "ML_ACC",
@@ -639,32 +755,15 @@
     },
     {
       "PowerHint": "DISPLAY_INACTIVE",
-      "Node": "CPULittleClusterMinFreq",
+      "Node": "CPUBigClusterMaxFreq",
       "Duration": 0,
-      "Value": "480000"
+      "Value": "2000000"
     },
     {
       "PowerHint": "DISPLAY_INACTIVE",
-      "Node": "CPUMidClusterMinFreq",
+      "Node": "CPUMidClusterMaxFreq",
       "Duration": 0,
-      "Value": "400000"
-    },
-    {
-      "PowerHint": "DISPLAY_INACTIVE",
-      "Node": "CPUBigClusterMinFreq",
-      "Duration": 0,
-      "Value": "400000"
-    },
-    {
-      "PowerHint": "DISPLAY_INACTIVE",
-      "Node": "GpuPwrLevel",
-      "Duration": 0,
-      "Value": "-1"
-    },
-    {
-      "PowerHint": "GAME",
-      "Type": "EndHint",
-      "Value": "INTERACTION"
+      "Value": "1800000"
     },
     {
       "PowerHint": "GAME",
@@ -686,39 +785,63 @@
     },
     {
       "PowerHint": "GAME",
-      "Node": "GpuPwrLevel",
+      "Node": "GPUBlockBoost",
       "Duration": 0,
-      "Value": "3"
+      "Value": "75"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "UclampTAMin",
+      "Duration": 0,
+      "Value": "30"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "UclampFGMin",
+      "Duration": 0,
+      "Value": "15"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "Dex2oatThreads",
+      "Duration": 0,
+      "Value": "4"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "Dex2oatCPUSet",
+      "Duration": 0,
+      "Value": "0,1,2,3"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
       "Node": "CPUBigClusterMinFreq",
-      "Duration": 2000,
+      "Duration": 500,
       "Value": "2200000"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
       "Node": "CPUMidClusterMinFreq",
-      "Duration": 2000,
+      "Duration": 500,
       "Value": "2000000"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
       "Node": "CPULittleClusterMinFreq",
-      "Duration": 2000,
+      "Duration": 500,
       "Value": "1500000"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
       "Node": "MemFreq",
-      "Duration": 2000,
-      "Value": "9999999999"
+      "Duration": 500,
+      "Value": "6400000000"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
-      "Node": "GpuPwrLevel",
-      "Duration": 2000,
-      "Value": "12"
+      "Node": "GPUBlockBoost",
+      "Duration": 500,
+      "Value": "50"
     },
     {
       "PowerHint": "LOW_POWER",
@@ -734,9 +857,22 @@
     },
     {
       "PowerHint": "LOW_POWER",
-      "Node": "GpuPwrLevel",
+      "Node": "CPULittleClusterMaxFreq",
       "Duration": 0,
-      "Value": "20"
+      "Value": "1800000"
+    },
+    {
+      "PowerHint": "LOW_POWER",
+      "Node": "Dex2oatThreads",
+      "Duration": 0,
+      "Value": "4"
+    },
+    {
+      "PowerHint": "LOW_POWER",
+      "Node": "Dex2oatCPUSet",
+      "Duration": 0,
+      "Value": "0,1,2,3"
     }
   ]
 }
+w
