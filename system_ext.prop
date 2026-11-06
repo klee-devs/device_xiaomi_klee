@@ -5,15 +5,17 @@ ro.audio.ihaladaptervendorextension_enabled=true
 ro.audio.usb.period_us=16000
 ro.camera.sound.forced=0
 
+# Memory Tagging (MTE)
+arm64.memtag.process.system_server=off
+persist.arm64.memtag.system_server=off
+persist.arm64.memtag.default=off
+ro.arm64.memtag.bootctl_supported=0
+
 # Radio
-persist.radio.is_vonr_enabled_0=true
-persist.radio.is_vonr_enabled_1=true
 ro.fota.oem=Xiaomi
 ro.radio.device_type=1
 ro.vendor.imeisv=03
 ro.vendor.mtk_gwsd_support=1
-ro.vendor.mtk_telephony_add_on_policy=0
-ro.vendor.vodata_support=1
 vendor.rild.libargs=-d /dev/ttyC0
 vendor.rild.libpath=mtk-ril.so
 
