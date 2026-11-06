@@ -14,11 +14,13 @@ import android.os.UserHandle
 import android.util.Log
 import android.view.Display
 import android.view.Display.HdrCapabilities
+import androidx.preference.PreferenceManager
 import com.xiaomi.settings.battery.ChargingLimitService
 import com.xiaomi.settings.corecontrol.CoreControlFragment
 import com.xiaomi.settings.display.ColorService
+import com.xiaomi.settings.light.LightService
 import com.xiaomi.settings.touchsampling.TouchSamplingService
-import com.xiaomi.settings.touchsampling.TouchSamplingTileService
+import com.xiaomi.settings.touchsampling.TouchSamplingSettingsFragment
 
 /** Everything begins at boot. */
 class BootCompletedReceiver : BroadcastReceiver() {
@@ -38,41 +40,73 @@ class BootCompletedReceiver : BroadcastReceiver() {
 
     private fun onBootCompleted(context: Context) {
         // Restore MediaTek GED & GPU settings after user unlock
-        CoreControlFragment.restoreSettings(context)
+        runCatching { CoreControlFragment.restoreSettings(context) }
+            .onFailure { Log.e(TAG, "Failed to restore CoreControl settings", it) }
+
+        // Start TouchSamplingService after CE storage unlock if enabled or per-app auto is active
+        runCatching {
+            val sharedHtsr = context.getSharedPreferences(
+                TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
+            )
+            val htsrEnabled = sharedHtsr.getBoolean(TouchSamplingSettingsFragment.HTSR_STATE, false)
+            val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val autoEnabled = defaultPrefs.getBoolean(
+                TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY, false
+            )
+            if (htsrEnabled || autoEnabled) {
+                context.startServiceAsUser(
+                    Intent(context, TouchSamplingService::class.java),
+                    UserHandle.CURRENT
+                )
+            }
+        }.onFailure { Log.e(TAG, "Failed to start TouchSamplingService on boot", it) }
+
+        // Light Service (reads credential-encrypted DefaultSharedPreferences after unlock)
+        runCatching {
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            if (sharedPreferences.getBoolean("light_enable", false)) {
+                context.startServiceAsUser(
+                    Intent(context, LightService::class.java),
+                    UserHandle.CURRENT
+                )
+            }
+        }.onFailure { Log.e(TAG, "Failed to start LightService on boot", it) }
+
+        // Ensure ChargingLimitService re-evaluates user preferences after unlock
+        runCatching {
+            context.startServiceAsUser(
+                Intent(context, ChargingLimitService::class.java),
+                UserHandle.CURRENT
+            )
+        }.onFailure { Log.e(TAG, "Failed to start ChargingLimitService on boot", it) }
     }
 
     private fun onLockedBootCompleted(context: Context) {
         // Display
-        context.startServiceAsUser(Intent(context, ColorService::class.java), UserHandle.CURRENT)
-
-        // Touch Sampling
-        context.startServiceAsUser(Intent(context, TouchSamplingService::class.java), UserHandle.CURRENT)
-
-        // Touch Sampling QS
-        context.startServiceAsUser(
-            Intent(context, TouchSamplingTileService::class.java),
-            UserHandle.CURRENT
-        )
+        runCatching {
+            context.startServiceAsUser(Intent(context, ColorService::class.java), UserHandle.CURRENT)
+        }.onFailure { Log.e(TAG, "Failed to start ColorService", it) }
 
         // Override HDR types to enable Dolby Vision
-        val displayManager = context.getSystemService(DisplayManager::class.java)
-        displayManager?.overrideHdrTypes(
-            Display.DEFAULT_DISPLAY,
-            intArrayOf(
-                HdrCapabilities.HDR_TYPE_DOLBY_VISION,
-                HdrCapabilities.HDR_TYPE_HDR10,
-                HdrCapabilities.HDR_TYPE_HLG,
-                HdrCapabilities.HDR_TYPE_HDR10_PLUS
+        runCatching {
+            val displayManager = context.getSystemService(DisplayManager::class.java)
+            displayManager?.overrideHdrTypes(
+                Display.DEFAULT_DISPLAY,
+                intArrayOf(
+                    HdrCapabilities.HDR_TYPE_DOLBY_VISION,
+                    HdrCapabilities.HDR_TYPE_HDR10,
+                    HdrCapabilities.HDR_TYPE_HLG,
+                    HdrCapabilities.HDR_TYPE_HDR10_PLUS
+                )
             )
-        )
-
-        // Light Service
-        val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
-        if (sharedPreferences.getBoolean("light_enable", false)) {
-            context.startServiceAsUser(Intent(context, com.xiaomi.settings.light.LightService::class.java), UserHandle.CURRENT)
-        }
+        }.onFailure { Log.e(TAG, "Failed to override HDR types", it) }
 
         // Battery
-        context.startServiceAsUser(Intent(context, ChargingLimitService::class.java), UserHandle.CURRENT)
+        runCatching {
+            context.startServiceAsUser(
+                Intent(context, ChargingLimitService::class.java),
+                UserHandle.CURRENT
+            )
+        }.onFailure { Log.e(TAG, "Failed to start ChargingLimitService at locked boot", it) }
     }
 }
