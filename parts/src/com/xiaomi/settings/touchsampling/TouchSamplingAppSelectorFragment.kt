@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2025 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.xiaomi.settings.touchsampling
 
 import android.content.pm.ApplicationInfo
@@ -7,10 +23,15 @@ import androidx.preference.PreferenceManager
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
 import com.android.settingslib.widget.SettingsBasePreferenceFragment
-import com.xiaomi.settings.R
 import java.util.HashSet
 
 class TouchSamplingAppSelectorFragment : SettingsBasePreferenceFragment() {
+
+    private data class AppEntry(
+        val appInfo: ApplicationInfo,
+        val label: String,
+        val labelLower: String,
+    )
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val screen = preferenceManager.createPreferenceScreen(requireContext())
@@ -19,21 +40,30 @@ class TouchSamplingAppSelectorFragment : SettingsBasePreferenceFragment() {
     }
 
     private fun loadApps(screen: PreferenceScreen) {
-        val packageManager = requireContext().packageManager
+        val context = requireContext()
+        val packageManager = context.packageManager
         val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
         val autoApps = savedAutoApps
 
-        val sortedApps = installedApps.filter { appInfo ->
-            appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0 &&
-            appInfo.packageName != requireContext().packageName
-        }.sortedWith(
-            compareByDescending<ApplicationInfo> { autoApps.contains(it.packageName) }
-            .thenBy { it.loadLabel(packageManager).toString().lowercase() }
-        )
+        val sortedApps = installedApps.asSequence()
+            .filter { appInfo ->
+                appInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0 &&
+                    appInfo.packageName != context.packageName
+            }
+            .map { appInfo ->
+                val label = appInfo.loadLabel(packageManager).toString()
+                AppEntry(appInfo, label, label.lowercase())
+            }
+            .sortedWith(
+                compareByDescending<AppEntry> { autoApps.contains(it.appInfo.packageName) }
+                    .thenBy { it.labelLower }
+            )
+            .toList()
 
-        for (appInfo in sortedApps) {
-            val pref = SwitchPreferenceCompat(requireContext()).apply {
-                title = appInfo.loadLabel(packageManager)
+        for (entry in sortedApps) {
+            val appInfo = entry.appInfo
+            val pref = SwitchPreferenceCompat(context).apply {
+                title = entry.label
                 summary = appInfo.packageName
                 icon = appInfo.loadIcon(packageManager)
                 isChecked = autoApps.contains(appInfo.packageName)
