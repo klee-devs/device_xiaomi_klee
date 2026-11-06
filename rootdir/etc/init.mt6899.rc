@@ -38,7 +38,7 @@ on init
     chown root system /proc/lk_env
     chmod 0660 /proc/lk_env
 
-# increase sysctl_rmem_max and sysctl_wmem_max values to 2M
+# increase sysctl_rmem_max and sysctl_wmem_max values to 8M
     write /proc/sys/net/core/wmem_max 8388608
     write /proc/sys/net/core/rmem_max 8388608
 
@@ -242,16 +242,13 @@ on post-fs-data
     #XIAOMI: Create camera directory for mivifwk file --end
 
     #XIAOMI: Create camera directory for calibration file --start
-    mkdir mnt/vendor/persist/camera
-    chown system cameraserver mnt/vendor/persist/camera
-    chmod 755 mnt/vendor/persist/camera
-    mkdir /data/vendor/camera
-    chown root system /data/vendor/camera
-    chmod 0777 /data/vendor/camera
+    mkdir /mnt/vendor/persist/camera
+    chown system cameraserver /mnt/vendor/persist/camera
+    chmod 0755 /mnt/vendor/persist/camera
     #XIAOMI: Create camera directory for calibration file --end
 
     #XIAOMI: add for ois --start
-    chmod 755 /mnt/vendor/nvcfg/sensor
+    chmod 0755 /mnt/vendor/nvcfg/sensor
     chmod +r /mnt/vendor/nvcfg/sensor/gyro_cali.json
     chmod +r /mnt/vendor/nvcfg/sensor/gyro_bias.json
     chmod +r /mnt/vendor/nvcfg/sensor/ois_temp_cali.json
@@ -293,10 +290,10 @@ on post-fs-data
     chmod 0660 /dev/spm
     chown system system /dev/spm
 
-# metis
+# metis & thermal message permissions
     chmod 0666 /dev/metis
     restorecon /dev/metis
-    chown 0666 /sys/module/metis/parameters
+    chown root system /sys/module/metis/parameters
     chmod 0664 /sys/module/metis/parameters/add_rebind_task_lit
     chmod 0664 /sys/module/metis/parameters/add_rebind_task_mid
     chmod 0664 /sys/module/metis/parameters/add_rebind_task_big
@@ -310,7 +307,6 @@ on post-fs-data
     chmod 0664 /sys/module/metis/parameters/add_bclus_affinity_uidlist
     chmod 0664 /sys/module/metis/parameters/del_bclus_affinity_uidlist
     chmod 0664 /sys/module/metis/parameters/reset_clus_affinity_uidlist
-    chown root system /sys/module/metis/parameters
     chown root system /sys/module/metis/parameters/add_rebind_task_lit
     chown root system /sys/module/metis/parameters/add_rebind_task_mid
     chown root system /sys/module/metis/parameters/add_rebind_task_big
@@ -324,14 +320,15 @@ on post-fs-data
     chown root system /sys/module/metis/parameters/add_bclus_affinity_uidlist
     chown root system /sys/module/metis/parameters/del_bclus_affinity_uidlist
     chown root system /sys/module/metis/parameters/reset_clus_affinity_uidlist
-    chmod 0666 /dev/metis
-    restorecon /dev/metis
     chmod 0666 /sys/module/metis/parameters/mi_viptask
     restorecon /sys/module/metis/parameters/mi_viptask
     chmod 0666 /sys/module/metis/parameters/mi_viptask_balance
     restorecon /sys/module/metis/parameters/mi_viptask_balance
     chmod 0666 /sys/module/metis/parameters/mi_boost_duration
     restorecon /sys/module/metis/parameters/mi_boost_duration
+    chown system system /sys/class/thermal/thermal_message/sconfig
+    chmod 0664 /sys/class/thermal/thermal_message/sconfig
+    restorecon /sys/class/thermal/thermal_message/sconfig
     chmod 0666 /sys/class/thermal/thermal_message/boost
     restorecon /sys/class/thermal/thermal_message/boost
     chmod 0666 /sys/module/metis/parameters/vip_link_enable
@@ -370,77 +367,6 @@ on post-fs-data
     chmod 0775 /vendor/xbin/MPED
     chmod 0666 /dev/gps_emi
 
-# metis
-    chmod 0666 /dev/metis
-    restorecon /dev/metis
-    chown 0666 /sys/module/metis/parameters
-    chmod 0664 /sys/module/metis/parameters/add_rebind_task_lit
-    chmod 0664 /sys/module/metis/parameters/add_rebind_task_mid
-    chmod 0664 /sys/module/metis/parameters/add_rebind_task_big
-    chmod 0664 /sys/module/metis/parameters/del_rebind_task_lit
-    chmod 0664 /sys/module/metis/parameters/del_rebind_task_mid
-    chmod 0664 /sys/module/metis/parameters/del_rebind_task_big
-    chmod 0664 /sys/module/metis/parameters/add_lclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/del_lclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/add_mclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/del_mclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/add_bclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/del_bclus_affinity_uidlist
-    chmod 0664 /sys/module/metis/parameters/reset_clus_affinity_uidlist
-    chown root system /sys/module/metis/parameters
-    chown root system /sys/module/metis/parameters/add_rebind_task_lit
-    chown root system /sys/module/metis/parameters/add_rebind_task_mid
-    chown root system /sys/module/metis/parameters/add_rebind_task_big
-    chown root system /sys/module/metis/parameters/del_rebind_task_lit
-    chown root system /sys/module/metis/parameters/del_rebind_task_mid
-    chown root system /sys/module/metis/parameters/del_rebind_task_big
-    chown root system /sys/module/metis/parameters/add_lclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/del_lclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/add_mclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/del_mclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/add_bclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/del_bclus_affinity_uidlist
-    chown root system /sys/module/metis/parameters/reset_clus_affinity_uidlist
-    chmod 0666 /dev/metis
-    restorecon /dev/metis
-    chmod 0666 /sys/module/metis/parameters/mi_viptask
-    restorecon /sys/module/metis/parameters/mi_viptask
-    chmod 0666 /sys/module/metis/parameters/mi_viptask_balance
-    restorecon /sys/module/metis/parameters/mi_viptask_balance
-    chmod 0666 /sys/module/metis/parameters/mi_boost_duration
-    restorecon /sys/module/metis/parameters/mi_boost_duration
-    chmod 0666 /sys/class/thermal/thermal_message/boost
-    restorecon /sys/class/thermal/thermal_message/boost
-    chmod 0666 /sys/module/metis/parameters/vip_link_enable
-    restorecon /sys/module/metis/parameters/vip_link_enable
-    chmod 0666 /sys/module/metis/parameters/vip_link_async_binder
-    restorecon /sys/module/metis/parameters/vip_link_async_binder
-    chmod 0666 /sys/module/metis/parameters/mi_fboost_enable
-    restorecon /sys/module/metis/parameters/mi_fboost_enable
-    chmod 0666 /sys/module/metis/parameters/add_mi_viptask_enqueue_boost
-    restorecon /sys/module/metis/parameters/add_mi_viptask_enqueue_boost
-    chmod 0666 /sys/module/metis/parameters/del_mi_viptask_enqueue_boost
-    restorecon /sys/module/metis/parameters/del_mi_viptask_enqueue_boost
-    chmod 0666 /sys/module/metis/parameters/add_mi_viptask_sched_priority
-    restorecon /sys/module/metis/parameters/add_mi_viptask_sched_priority
-    chmod 0666 /sys/module/metis/parameters/del_mi_viptask_sched_priority
-    restorecon /sys/module/metis/parameters/del_mi_viptask_sched_priority
-    chmod 0666 /sys/module/metis/parameters/add_mi_viptask_sched_lit_core
-    restorecon /sys/module/metis/parameters/add_mi_viptask_sched_lit_core
-    chmod 0666 /sys/module/metis/parameters/del_mi_viptask_sched_lit_core
-    restorecon /sys/module/metis/parameters/del_mi_viptask_sched_lit_core
-    chmod 0666 /sys/module/metis/parameters/is_break_enable
-    restorecon /sys/module/metis/parameters/is_break_enable
-    chmod 0666 /sys/module/metis/parameters/trace_motion_event
-    restorecon /sys/module/metis/parameters/trace_motion_event
-    chown root system /sys/module/metis/parameters/trace_motion_event
-    chmod 0666 /sys/module/metis/parameters/cold_start_app_tgid
-    restorecon /sys/module/metis/parameters/cold_start_app_tgid
-    chmod 0666 /sys/module/metis/parameters/protect_cs
-    restorecon /sys/module/metis/parameters/protect_cs
-    chmod 0666 /sys/module/metis/parameters/set_static_vip
-    restorecon /sys/module/metis/parameters/set_static_vip
-
 # mirror
     chmod 0666 /dev/uhid
 
@@ -461,6 +387,18 @@ on post-fs-data
     chmod 0660 /sys/devices/system/cpu/cpu5/online
     chmod 0660 /sys/devices/system/cpu/cpu6/online
     chmod 0660 /sys/devices/system/cpu/cpu7/online
+
+# MediaTek GED & GPU Control (XiaomiParts & PowerHAL)
+    chown system system /sys/module/ged/parameters/ged_boost_enable
+    chmod 0664 /sys/module/ged/parameters/ged_boost_enable
+    chown system system /sys/module/ged/parameters/gx_game_mode
+    chmod 0664 /sys/module/ged/parameters/gx_game_mode
+    chown system system /sys/module/ged/parameters/gpu_dvfs_enable
+    chmod 0664 /sys/module/ged/parameters/gpu_dvfs_enable
+    chown system system /sys/kernel/ged/hal/gpu_boost_level
+    chmod 0664 /sys/kernel/ged/hal/gpu_boost_level
+    chown system system /proc/gpufreqv2/fix_target_opp_index
+    chmod 0664 /proc/gpufreqv2/fix_target_opp_index
 
 # Charging Control
     chown system system /sys/class/power_supply/battery/input_suspend
@@ -689,9 +627,6 @@ on post-fs-data
     chmod 0664 /proc/cpu_ss/cpu_ss_period
     chmod 0664 /proc/cpu_ss/cpu_ss_period_mode
 
-    #EM eint
-    chown root diag /sys/bus/platform/drivers/eint/current_eint
-
     # Android SEC related device nodes
     chmod 0660 /dev/sec
     chown root system /dev/sec
@@ -699,8 +634,6 @@ on post-fs-data
     # FM Radio device node
     chmod 0660 /dev/fm
     chown media media /dev/fm
-
-    # device apc settings
 
     # device info /proc interface
     chmod 0440 /dev/devmap
@@ -722,7 +655,6 @@ on post-fs-data
     #HDMI
     chown media system /dev/hdmitx
     chmod 0664 /dev/hdmitx
-
 
     # JPEG
     chmod 0666 /proc/mtk_jpeg
@@ -832,9 +764,7 @@ on post-fs-data
     chmod 0660 /dev/mtk_dfrc
     chown system graphics /dev/mtk_dfrc
 
-
-   #change partition permission
-
+    #change partition permission
     chmod 0640 /mtd@sec_ro
     chown root system /mtd@sec_ro
 
@@ -885,10 +815,9 @@ on post-fs-data
 
     chmod 0666 /dev/exm0
 
-
-	#Thermal
-	mkdir /data/vendor/.tp/ 0775 system system
-	mkdir /data/vendor/thermal/ 0775 system system
+    #Thermal
+    mkdir /data/vendor/.tp/ 0775 system system
+    mkdir /data/vendor/thermal/ 0775 system system
 
     #MCUPM log
     chmod 0620 /sys/class/misc/mcupm/mcupm_mobile_log
@@ -897,14 +826,14 @@ on post-fs-data
     chown root system /dev/mcupm
 
     #EM of MT6360
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_pmu.5-0034/data
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_pmic.5-001a/data
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_ldo.5-0064/data
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360-4e/data
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_pmu.5-0034/reg_addr
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_pmic.5-001a/reg_addr
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360_ldo.5-0064/reg_addr
-    chmod 0664 sys/kernel/debug/rt-regmap/mt6360-4e/reg_addr
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_pmu.5-0034/data
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_pmic.5-001a/data
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_ldo.5-0064/data
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360-4e/data
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_pmu.5-0034/reg_addr
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_pmic.5-001a/reg_addr
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360_ldo.5-0064/reg_addr
+    chmod 0664 /sys/kernel/debug/rt-regmap/mt6360-4e/reg_addr
 
     #blocktag driver node
     chown system system /proc/blocktag/eara_io_boost
@@ -978,7 +907,6 @@ on boot
     chown radio system /sys/power/tuxonice/do_hibernate
     chmod 0770 /sys/power/tuxonice
     chmod 0220 /sys/power/tuxonice/do_hibernate
-
 
 # Smartbook Handler Framework
     chown system system /sys/power/sb_state
@@ -1088,7 +1016,6 @@ on boot
     chown system system /sys/power/dcm_state
     chmod 0660 /sys/power/dcm_state
 
-
     # MIUI ADD: Performance_UnfairMem
     chmod 0771 /proc/mi_mem_engine
     chown system root /proc/mi_mem_engine/scene_tid
@@ -1097,7 +1024,6 @@ on boot
     # END Performance_UnfairMem
 
 ##Netlog tool
-   #change permissions about terminal
     chown root radio /proc/net/vlan/config
     chmod 0640 /proc/net/vlan/config
     chown root radio /proc/net/ip6_tables_matches
@@ -1129,6 +1055,7 @@ on boot
     chown system radio /dev/ttyGS0
     chmod 660 /dev/ttyGS1
     chown system radio /dev/ttyGS1
+
 #Power Manager
     write /sys/power/pm_freeze_timeout 2000
 
@@ -1159,19 +1086,23 @@ on property:vold.decrypt=trigger_shutdown_framework
     setprop sys.boot_completed 0
     setprop dev.bootcomplete 0
 
-# end boot time fs tune
+# end boot time fs tune & UFS 4.1 / VM optimization
 on property:sys.boot_completed=1
     write /sys/block/sdc/queue/scheduler "mq-deadline"
-    write /sys/block/mmcblk0/queue/iostats 1
-    write /sys/block/mmcblk0/queue/read_ahead_kb 512
-    write /sys/block/sdc/queue/iostats 1
-    write /sys/block/sdc/queue/read_ahead_kb 512
+    write /sys/block/mmcblk0/queue/iostats 0
+    write /sys/block/mmcblk0/queue/read_ahead_kb 128
+    write /sys/block/sdc/queue/iostats 0
+    write /sys/block/sdc/queue/read_ahead_kb 128
+    write /sys/block/sdc/queue/nr_requests 64
     write /sys/block/dm-0/queue/read_ahead_kb 128
     write /sys/block/dm-1/queue/read_ahead_kb 128
     write /sys/block/dm-2/queue/read_ahead_kb 128
     write /sys/block/dm-3/queue/read_ahead_kb 128
     write /sys/block/dm-4/queue/read_ahead_kb 128
     write /sys/block/dm-5/queue/read_ahead_kb 128
+    write /proc/sys/vm/swappiness 100
+    write /proc/sys/vm/page-cluster 0
+    write /proc/sys/vm/watermark_scale_factor 125
 
 on property:sys.boot_completed=1
     restart android-hardware-media-c2-hal
@@ -1210,10 +1141,10 @@ on property:persist.vendor.mediatek.charger.log.enable=1
     write /sys/module/mt6375_charger/parameters/dbg_log_en 1
 
 on property:ro.boot.crash_reason=*
-  setprop vendor.minidump.crash_reason ${ro.boot.crash_reason}
+    setprop vendor.minidump.crash_reason ${ro.boot.crash_reason}
 
 on property:persist.sys.turbosched.enable.coreApp.optimizer=true
-    write  /sys/module/metis/parameters/mi_fboost_enable 1
+    write /sys/module/metis/parameters/mi_fboost_enable 1
 
 # MSYNC Game
 on boot
@@ -1236,9 +1167,6 @@ on late-init && property:ro.build.type=user && property:ro.debuggable=1
 on property:sys.boot_completed=1 && property:ro.build.type=user && property:ro.debuggable=1
     chmod 0755 /sys/kernel/tracing
     setprop persist.dbg.keep_debugfs_mounted true
-
-on property:persist.sys.turbosched.enable.coreApp.optimizer=true
-    write  /sys/module/metis/parameters/mi_fboost_enable 1
 
 service logger /system/bin/logcat -b all -D -f /metadata/boot_log.txt
     class main
