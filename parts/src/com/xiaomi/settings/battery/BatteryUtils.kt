@@ -19,10 +19,11 @@ object BatteryUtils {
     const val PREF_BYPASS_CHARGING = "bypass_charging"
     private const val NODE_SMART_CHG = "/sys/class/power_supply/battery/smart_chg"
 
-    // Function type 32 (0x40/0x41) is the kernel SOC-limit control.
-    // The old 0x11 command selects type 8 and does not encode an SOC target.
-    private const val SMART_CHG_SOC_LIMIT_ENABLE = 0x41
-    private const val SMART_CHG_SOC_LIMIT_RESET = 0x640040
+    // smart_chg encodes function type 1 (SMART_CHG_NAVIGATION) in bit 1,
+    // and bit 0 enables it. The kernel uses this function for its SOC cutoff.
+    private const val SMART_CHG_SOC_LIMIT_TYPE = 1 shl 1
+    private const val SMART_CHG_SOC_LIMIT_ENABLE = SMART_CHG_SOC_LIMIT_TYPE or 1
+    private const val SMART_CHG_SOC_LIMIT_DISABLE = SMART_CHG_SOC_LIMIT_TYPE
 
     fun setSmartChargeMode(bypassEnabled: Boolean, limitEnabled: Boolean, limit: Int): Boolean {
         val file = File(NODE_SMART_CHG)
@@ -32,20 +33,32 @@ object BatteryUtils {
         }
 
         return try {
-            if (!bypassEnabled) {
-                // Clear a previously triggered limit before applying another mode.
-                writeSmartChargeCommand(file, SMART_CHG_SOC_LIMIT_RESET)
+            // A zero-percent SOC cutoff stops charging while leaving the input
+            // power path enabled; input_suspend is deliberately untouched.
+            val chargeLimit = when {
+                bypassEnabled -> 0
+                limitEnabled -> limit.coerceIn(10, 100)
+                else -> null
             }
-            if (bypassEnabled || limitEnabled) {
-                // A 0% SOC cutoff stops battery charging while keeping the input
-                // power path enabled, unlike input_suspend.
-                val chargeLimit = if (bypassEnabled) 0 else limit.coerceIn(10, 100)
-                val value = (chargeLimit shl 16) or SMART_CHG_SOC_LIMIT_ENABLE
-                writeSmartChargeCommand(file, value)
+            val command = chargeLimit?.let {
+                (it shl 16) or SMART_CHG_SOC_LIMIT_ENABLE
+            } ?: SMART_CHG_SOC_LIMIT_DISABLE
+            val readback = writeSmartChargeCommand(file, command)
+            val expectedEnabled = chargeLimit != null
+            if (readback != null &&
+                ((readback and SMART_CHG_SOC_LIMIT_TYPE) != 0) != expectedEnabled
+            ) {
+                Log.e(
+                    TAG,
+                    "Kernel did not apply charging mode (bypass=$bypassEnabled, " +
+                        "limitEnabled=$limitEnabled, readback=$readback)"
+                )
+                return false
             }
-            Log.d(
+            Log.i(
                 TAG,
-                "Successfully updated charging mode (bypass=$bypassEnabled, limitEnabled=$limitEnabled)"
+                "Charging mode applied (bypass=$bypassEnabled, limitEnabled=$limitEnabled, " +
+                    "limit=$chargeLimit, kernelState=$readback)"
             )
             true
         } catch (e: IOException) {
@@ -54,7 +67,7 @@ object BatteryUtils {
         }
     }
 
-    private fun writeSmartChargeCommand(file: File, command: Int) {
+    private fun writeSmartChargeCommand(file: File, command: Int): Int? {
         val value = "0x${command.toString(16)}"
         FileOutputStream(file).use { fos ->
             fos.write(value.toByteArray(StandardCharsets.UTF_8))
@@ -63,6 +76,21 @@ object BatteryUtils {
                 fos.fd.sync()
             } catch (ignored: IOException) {}
         }
-        Log.d(TAG, "Successfully wrote $value to $NODE_SMART_CHG")
+        val rawReadback = try {
+            file.readText(StandardCharsets.UTF_8).trim()
+        } catch (e: IOException) {
+            Log.w(TAG, "Could not read back $NODE_SMART_CHG", e)
+            return null
+        }
+        val readback = if (rawReadback.startsWith("0x", ignoreCase = true)) {
+            rawReadback.substring(2).toIntOrNull(16)
+        } else {
+            rawReadback.toIntOrNull()
+        }
+        Log.i(TAG, "Wrote $value to $NODE_SMART_CHG; kernel readback=$rawReadback")
+        if (readback == null) {
+            Log.w(TAG, "Unrecognized smart_chg readback: $rawReadback")
+        }
+        return readback
     }
 }
