@@ -574,12 +574,6 @@
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
-      "Node": "GpuPwrLevel",
-      "Duration": 0,
-      "Value": "10"
-    },
-    {
-      "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "GPUBlockBoost",
       "Duration": 0,
       "Value": "50"
@@ -686,9 +680,9 @@
     },
     {
       "PowerHint": "GAME",
-      "Node": "GpuPwrLevel",
+      "Node": "GPUBlockBoost",
       "Duration": 0,
-      "Value": "3"
+      "Value": "50"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
@@ -716,9 +710,9 @@
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
-      "Node": "GpuPwrLevel",
+      "Node": "GPUBlockBoost",
       "Duration": 2000,
-      "Value": "12"
+      "Value": "50"
     },
     {
       "PowerHint": "LOW_POWER",
