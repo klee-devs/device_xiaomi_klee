@@ -100,7 +100,6 @@ class TouchSamplingTileService : TileService() {
         } else {
             cancelTouchSamplingNotification()
         }
-
     }
 
     private fun isTouchSamplingEnabled(): Boolean {
@@ -108,7 +107,6 @@ class TouchSamplingTileService : TileService() {
             TouchSamplingSettingsFragment.SHAREDHTSR,
             Context.MODE_PRIVATE
         )
-
         return sharedPref.getBoolean(
             TouchSamplingSettingsFragment.HTSR_STATE,
             false
@@ -120,7 +118,6 @@ class TouchSamplingTileService : TileService() {
             TouchSamplingSettingsFragment.SHAREDHTSR,
             Context.MODE_PRIVATE
         )
-
         sharedPref.edit()
             .putBoolean(TouchSamplingSettingsFragment.HTSR_STATE, state)
             .apply()
@@ -139,7 +136,7 @@ class TouchSamplingTileService : TileService() {
     }
 
     private fun showTouchSamplingNotification() {
-        val intent = Intent(Intent.ACTION_POWER_USAGE_SUMMARY).addFlags(
+        val intent = Intent(this, TouchSamplingSettingsActivity::class.java).addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK
         )
 
@@ -147,7 +144,7 @@ class TouchSamplingTileService : TileService() {
             this,
             0,
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = Notification.Builder(
@@ -175,7 +172,6 @@ class TouchSamplingTileService : TileService() {
         private const val NOTIFICATION_CHANNEL_ID =
             "touch_sampling_tile_service_channel"
 
-        private const val NOTIFICATION_ID = 3
+        const val NOTIFICATION_ID = 3
     }
-
 }
