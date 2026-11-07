@@ -11,15 +11,15 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.os.UserHandle
-import android.os.IBinder
 import android.util.Log
-import android.view.SurfaceControl;
 import android.view.Display
 import android.view.Display.HdrCapabilities
-import com.xiaomi.settings.display.ColorService
-import com.xiaomi.settings.touchsampling.TouchSamplingService
-import com.xiaomi.settings.touchsampling.TouchSamplingTileService
+import androidx.preference.PreferenceManager
 import com.xiaomi.settings.battery.ChargingLimitService
+import com.xiaomi.settings.display.ColorService
+import com.xiaomi.settings.light.LightService
+import com.xiaomi.settings.touchsampling.TouchSamplingService
+import com.xiaomi.settings.touchsampling.TouchSamplingSettingsFragment
 
 /** Everything begins at boot. */
 class BootCompletedReceiver : BroadcastReceiver() {
@@ -30,57 +30,79 @@ class BootCompletedReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (DEBUG) Log.d(TAG, "Received boot completed intent: ${intent.action}")
+        if (DEBUG) Log.d(TAG, "Received boot completed intent: " + intent.action)
         when (intent.action) {
-            Intent.ACTION_BOOT_COMPLETED -> onBootCompleted(context)
+            Intent.ACTION_BOOT_COMPLETED -> Unit
             Intent.ACTION_LOCKED_BOOT_COMPLETED -> onLockedBootCompleted(context)
         }
-
-        // Override HDR types
-        val displayManager = context.getSystemService(DisplayManager::class.java)
-        displayManager.overrideHdrTypes(
-            Display.DEFAULT_DISPLAY,
-            intArrayOf(
-                HdrCapabilities.HDR_TYPE_DOLBY_VISION,
-                HdrCapabilities.HDR_TYPE_HDR10,
-                HdrCapabilities.HDR_TYPE_HLG,
-                HdrCapabilities.HDR_TYPE_HDR10_PLUS
-            )
-        )
-    }
-
-    private fun onBootCompleted(context: Context) {
+        overrideHdrTypes(context)
     }
 
     private fun onLockedBootCompleted(context: Context) {
-        // Display
-        context.startServiceAsUser(Intent(context, ColorService::class.java), UserHandle.CURRENT)
+        startService(context, ColorService::class.java, "ColorService")
 
-        // Touch Sampling
-        context.startServiceAsUser(Intent(context, TouchSamplingService::class.java), UserHandle.CURRENT)
+        val touchSamplingEnabled = runCatching {
+            val sharedHtsr = context.getSharedPreferences(
+                TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
+            )
+            val defaultPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+            val globalEnabled = sharedHtsr.getBoolean(
+                TouchSamplingSettingsFragment.HTSR_STATE, false
+            )
+            val autoEnabled = defaultPrefs.getBoolean(
+                TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY, false
+            )
+            val autoApps = defaultPrefs.getStringSet(
+                TouchSamplingSettingsFragment.HTSR_APPS_PREF, emptySet()
+            ).orEmpty()
+            globalEnabled || (autoEnabled && autoApps.isNotEmpty())
+        }.onFailure {
+            Log.e(TAG, "Failed to read touch sampling preferences", it)
+        }.getOrDefault(false)
 
-        // Touch Sampling qs
-        context.startServiceAsUser(
-            Intent(context, TouchSamplingTileService::class.java),
-            UserHandle.CURRENT
-        )
-
-        // Override HDR types to enable Dolby Vision
-        val displayManager = context.getSystemService(DisplayManager::class.java)
-        displayManager?.overrideHdrTypes(Display.DEFAULT_DISPLAY, intArrayOf(
-            HdrCapabilities.HDR_TYPE_DOLBY_VISION,
-            HdrCapabilities.HDR_TYPE_HDR10,
-            HdrCapabilities.HDR_TYPE_HLG,
-            HdrCapabilities.HDR_TYPE_HDR10_PLUS
-        ))
-
-        // Light Service
-        val sharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
-        if (sharedPreferences.getBoolean("light_enable", false)) {
-            context.startServiceAsUser(Intent(context, com.xiaomi.settings.light.LightService::class.java), UserHandle.CURRENT)
+        if (touchSamplingEnabled) {
+            startService(context, TouchSamplingService::class.java, "TouchSamplingService")
         }
 
-        // Battery
-        context.startServiceAsUser(Intent(context, ChargingLimitService::class.java), UserHandle.CURRENT)
+        val lightEnabled = runCatching {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean("light_enable", false)
+        }.onFailure {
+            Log.e(TAG, "Failed to read light service preference", it)
+        }.getOrDefault(false)
+
+        if (lightEnabled) {
+            startService(context, LightService::class.java, "LightService")
+        }
+
+        startService(context, ChargingLimitService::class.java, "ChargingLimitService")
+    }
+
+    private fun overrideHdrTypes(context: Context) {
+        runCatching {
+            val displayManager = context.getSystemService(DisplayManager::class.java)
+            displayManager?.overrideHdrTypes(
+                Display.DEFAULT_DISPLAY,
+                intArrayOf(
+                    HdrCapabilities.HDR_TYPE_DOLBY_VISION,
+                    HdrCapabilities.HDR_TYPE_HDR10,
+                    HdrCapabilities.HDR_TYPE_HLG,
+                    HdrCapabilities.HDR_TYPE_HDR10_PLUS
+                )
+            )
+        }.onFailure {
+            Log.e(TAG, "Failed to override HDR types", it)
+        }
+    }
+
+    private fun startService(context: Context, serviceClass: Class<*>, name: String) {
+        runCatching {
+            context.startServiceAsUser(
+                Intent(context, serviceClass),
+                UserHandle.CURRENT
+            )
+        }.onFailure {
+            Log.e(TAG, "Failed to start " + name, it)
+        }
     }
 }
