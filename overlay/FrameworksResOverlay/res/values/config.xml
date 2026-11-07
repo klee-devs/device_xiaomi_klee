@@ -539,7 +539,7 @@
 
          @see https://www.w3.org/TR/SVG/paths.html#PathData
          -->
-    <string name="config_mainBuiltInDisplayCutout">M 0,0 H -39 V 102 H 39 V 0 H 0 Z</string>
+    <string name="config_mainBuiltInDisplayCutout">M 0,0 H -40 V 156 H 40 V 0 H 0 Z</string>
 
     <!-- ComponentName of a dream to show whenever the system would otherwise have
          gone to sleep.  When the PowerManager is asked to go to sleep, it will instead
