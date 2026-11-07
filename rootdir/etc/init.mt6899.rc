@@ -1178,6 +1178,8 @@ on property:sys.boot_completed=1
     write /proc/bootprof "boot_completed"
     # stop bootprof
     write /proc/bootprof 0
+    # Keep this log limited to boot; logcat otherwise streams all buffers forever.
+    stop logger
 
 # Battery info
 on property:persist.vendor.mediatek.fg.disable=1
