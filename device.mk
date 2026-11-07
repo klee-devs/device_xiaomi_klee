@@ -12,6 +12,11 @@ PRODUCT_SYSTEM_PROPERTIES += \
     log.tag.mtk_wfd_page-uncached=FATAL \
     log.tag.SurfaceFlinger=FATAL
 
+# ZRAM is opt-in through Xiaomi Parts.
+PRODUCT_SYSTEM_PROPERTIES += \
+    persist.sys.xiaomi.zram_enabled=0 \
+    persist.sys.zram_enabled=0
+
 # MediaTek SoC identification
 PRODUCT_PACKAGES += \
     chipinfo

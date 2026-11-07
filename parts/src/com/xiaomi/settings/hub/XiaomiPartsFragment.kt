@@ -75,9 +75,26 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
                 }
             }
         }
+
+        findPreference<SwitchPreferenceCompat>(KEY_ZRAM_ENABLED)?.apply {
+            isChecked = SystemProperties.getBoolean(PROP_ZRAM_ENABLED, false)
+            setOnPreferenceChangeListener { _, newValue ->
+                val enabled = newValue as? Boolean
+                    ?: return@setOnPreferenceChangeListener false
+                try {
+                    SystemProperties.set(PROP_ZRAM_ENABLED, if (enabled) "1" else "0")
+                    true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to update ZRAM preference", e)
+                    false
+                }
+            }
+        }
     }
 
     companion object {
+        private const val KEY_ZRAM_ENABLED = "parts_zram_enabled"
+        private const val PROP_ZRAM_ENABLED = "persist.sys.xiaomi.zram_enabled"
         private const val KEY_BACKLIGHT = "parts_backlight"
         private const val KEY_GAME_BAR = "parts_game_bar"
         private const val KEY_TOUCH_SAMPLING = "parts_touch_sampling"

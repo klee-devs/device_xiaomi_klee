@@ -45,6 +45,11 @@
     <string name="low_light_fingerprint_title">Low-light fingerprint unlock</string>
     <string name="low_light_fingerprint_summary">Reduce fingerprint illumination in dark environments. Unlocking may take longer.</string>
 
+    <!-- ZRAM -->
+    <string name="memory_settings_category_title">Memory</string>
+    <string name="zram_enabled_title">Enable ZRAM</string>
+    <string name="zram_enabled_summary">Use compressed memory as swap. Changes take effect after a reboot.</string>
+
     <!-- Core Control -->
     <string name="core_control_title">Core Control</string>
     <string name="core_control_summary">Manually enable or disable individual CPU cores</string>
@@ -147,7 +152,7 @@
 
     <!-- Xiaomi Parts Hub -->
     <string name="xiaomi_parts_title">Xiaomi Parts</string>
-    <string name="xiaomi_parts_summary">Back Light, Game Bar, Touch Sampling, Charging Control and Core Control</string>
+    <string name="xiaomi_parts_summary">Back Light, Game Bar, Touch Sampling, Charging Control, Core Control and ZRAM</string>
     <string name="parts_settings_category_title">ilystack27</string>
 
     <!-- RGB Light Settings -->

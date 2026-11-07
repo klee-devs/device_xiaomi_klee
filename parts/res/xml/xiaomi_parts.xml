@@ -38,6 +38,17 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/memory_settings_category_title">
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="parts_zram_enabled"
+            android:title="@string/zram_enabled_title"
+            android:summary="@string/zram_enabled_summary"
+            android:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/fingerprint_settings_category_title">
 
         <androidx.preference.SwitchPreferenceCompat

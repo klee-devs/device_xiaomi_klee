@@ -1,7 +1,11 @@
-# Init script for configuring ZRAM
-on post-fs-data
+# Apply the Xiaomi Parts preference after persistent properties load.
+on load_persist_props_action && property:persist.sys.xiaomi.zram_enabled=1
+    setprop persist.sys.zram_enabled 1
     write /sys/block/zram0/comp_algorithm lz4
     write /proc/sys/vm/page-cluster 0
     write /proc/sys/vm/swappiness 50
     write /sys/kernel/mm/swap/vma_ra_enabled true
     swapon_all /vendor/etc/fstab.zram
+
+on load_persist_props_action && property:persist.sys.xiaomi.zram_enabled=0
+    setprop persist.sys.zram_enabled 0

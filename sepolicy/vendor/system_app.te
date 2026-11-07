@@ -43,3 +43,6 @@ allow system_app vendor_sysfs_corecontrol:file rw_file_perms;
 allow system_app sysfs_batteryinfo:dir search;
 allow system_app sysfs_batteryinfo:lnk_file read;
 allow system_app vendor_sysfs_chargecontrol:file rw_file_perms;
+
+# Xiaomi Parts ZRAM preference
+set_prop(system_app, klee_zram_enabled_prop)
