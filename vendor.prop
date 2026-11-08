@@ -353,7 +353,6 @@ persist.vendor.vt.multi_profile_support=1
 persist.vendor.wfc.cnop_vowifi=1
 ro.telephony.default_network=32,32,32,32
 ro.telephony.iwlan_operation_mode=AP-assisted
-ro.product.mod_device=goya_eea_global
 ro.vendor.md_auto_setup_ims=1
 ro.vendor.md_log_memdump_wait=15
 ro.vendor.md_prop_ver=1
