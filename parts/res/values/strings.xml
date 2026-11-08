@@ -153,15 +153,15 @@
     <!-- Xiaomi Parts Hub -->
     <string name="xiaomi_parts_title">Xiaomi Parts</string>
     <string name="thermal_profiles_title">App Thermal Profiles</string>
-    <string name="thermal_profiles_summary">Choose a thermal profile for each app</string>
-    <string name="thermal_profile_enable_title">Enable app thermal profiles</string>
-    <string name="thermal_profile_enable_summary">Apply an app profile while it is in the foreground. Klee thermal protections remain active.</string>
+    <string name="thermal_profiles_summary">Automatic profiles with per-app overrides</string>
+    <string name="thermal_profile_enable_title">Automatic app thermal profiles</string>
+    <string name="thermal_profile_enable_summary">Select profiles for games, camera, maps, video and calls. Thermal protections remain active.</string>
     <string name="thermal_profile_configure_apps_title">Profiles per app</string>
-    <string name="thermal_profile_configure_apps_summary">Choose a stock thermal profile for each app</string>
+    <string name="thermal_profile_configure_apps_summary">Override the automatic profile for individual apps</string>
     <string name="thermal_profile_apps_title">Profiles per app</string>
     <string name="thermal_profile_apps_category">Apps</string>
     <string name="thermal_profile_dialog_title">Thermal profile for %1$s</string>
-    <string name="thermal_profile_no_override">No override</string>
+    <string name="thermal_profile_auto">Automatic</string>
     <string name="thermal_profile_normal">Normal</string>
     <string name="thermal_profile_phone">Phone</string>
     <string name="thermal_profile_arvr">AR/VR</string>

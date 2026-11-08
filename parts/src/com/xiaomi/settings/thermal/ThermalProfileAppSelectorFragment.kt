@@ -7,10 +7,10 @@ package com.xiaomi.settings.thermal
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.os.Handler
-import android.os.Looper
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceManager
@@ -43,10 +43,13 @@ class ThermalProfileAppSelectorFragment : SettingsBasePreferenceFragment() {
             .distinctBy { it.packageName }
             .sortedWith(
                 compareByDescending<ApplicationInfo> {
-                    prefs.getString(
+                    val profile = prefs.getString(
                         ThermalProfileController.PREF_APP_PROFILE_PREFIX + it.packageName,
-                        NO_PROFILE
-                    ) != NO_PROFILE
+                        ThermalProfileController.AUTO_PROFILE
+                    )
+                    profile != null &&
+                        profile != ThermalProfileController.AUTO_PROFILE &&
+                        profile != LEGACY_AUTO_PROFILE
                 }.thenBy {
                     it.loadLabel(packageManager).toString().lowercase()
                 }
@@ -56,8 +59,15 @@ class ThermalProfileAppSelectorFragment : SettingsBasePreferenceFragment() {
         for (appInfo in apps) {
             val packageName = appInfo.packageName
             val key = ThermalProfileController.PREF_APP_PROFILE_PREFIX + packageName
-            val savedValue = prefs.getString(key, NO_PROFILE) ?: NO_PROFILE
-            val selectedValue = savedValue.takeIf { values.contains(it) } ?: NO_PROFILE
+            val savedValue = prefs.getString(key, ThermalProfileController.AUTO_PROFILE)
+                ?: ThermalProfileController.AUTO_PROFILE
+            val normalizedValue = if (savedValue == LEGACY_AUTO_PROFILE) {
+                ThermalProfileController.AUTO_PROFILE
+            } else {
+                savedValue
+            }
+            val selectedValue = normalizedValue.takeIf { values.contains(it) }
+                ?: ThermalProfileController.AUTO_PROFILE
             val label = appInfo.loadLabel(packageManager)
             val preference = ListPreference(context).apply {
                 this.key = key
@@ -70,7 +80,7 @@ class ThermalProfileAppSelectorFragment : SettingsBasePreferenceFragment() {
                 value = selectedValue
                 summary = profileSummary(entries, values, selectedValue)
                 setOnPreferenceChangeListener { changedPreference, newValue ->
-                    val nextValue = newValue?.toString() ?: NO_PROFILE
+                    val nextValue = newValue?.toString() ?: ThermalProfileController.AUTO_PROFILE
                     changedPreference.summary = profileSummary(entries, values, nextValue)
                     Handler(Looper.getMainLooper()).post {
                         ThermalProfileService.syncService(context)
@@ -89,10 +99,10 @@ class ThermalProfileAppSelectorFragment : SettingsBasePreferenceFragment() {
     ): String {
         val index = values.indexOfFirst { it.toString() == value }
         return if (index >= 0) entries[index].toString()
-        else getString(R.string.thermal_profile_no_override)
+        else getString(R.string.thermal_profile_auto)
     }
 
     companion object {
-        private const val NO_PROFILE = "none"
+        private const val LEGACY_AUTO_PROFILE = "none"
     }
 }

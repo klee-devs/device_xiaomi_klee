@@ -5,7 +5,7 @@
         android:key="thermal_profile_enabled"
         android:title="@string/thermal_profile_enable_title"
         android:summary="@string/thermal_profile_enable_summary"
-        android:defaultValue="false" />
+        android:defaultValue="true" />
 
     <Preference
         android:key="thermal_profile_app_profiles"

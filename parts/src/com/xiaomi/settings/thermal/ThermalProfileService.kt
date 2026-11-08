@@ -33,7 +33,12 @@ class ThermalProfileService : Service() {
                 canMonitor()
             }
             if (shouldContinue) {
-                monitorHandler?.postDelayed(this, MONITOR_INTERVAL)
+                val delay = if (isScreenInteractive()) {
+                    MONITOR_INTERVAL
+                } else {
+                    IN_CALL_MONITOR_INTERVAL
+                }
+                monitorHandler?.postDelayed(this, delay)
             }
         }
     }
@@ -43,7 +48,11 @@ class ThermalProfileService : Service() {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     monitorHandler?.removeCallbacks(monitorRunnable)
-                    ThermalProfileController.restore(this@ThermalProfileService)
+                    if (isCallActive()) {
+                        scheduleMonitoring()
+                    } else {
+                        ThermalProfileController.restore(this@ThermalProfileService)
+                    }
                 }
                 Intent.ACTION_SCREEN_ON,
                 Intent.ACTION_USER_PRESENT -> scheduleMonitoring()
@@ -74,8 +83,8 @@ class ThermalProfileService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val enabled = prefs.getBoolean(ThermalProfileController.PREF_ENABLED, false)
-        if (!enabled || !ThermalProfileController.hasAppProfiles(this)) {
+        val enabled = prefs.getBoolean(ThermalProfileController.PREF_ENABLED, true)
+        if (!enabled) {
             ThermalProfileController.restore(this)
             stopSelf(startId)
             return START_NOT_STICKY
@@ -85,9 +94,7 @@ class ThermalProfileService : Service() {
 
     private fun updateThermalProfile(): Boolean {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        if (!prefs.getBoolean(ThermalProfileController.PREF_ENABLED, false) ||
-            !ThermalProfileController.hasAppProfiles(this)
-        ) {
+        if (!prefs.getBoolean(ThermalProfileController.PREF_ENABLED, true)) {
             ThermalProfileController.restore(this)
             stopSelf()
             return false
@@ -104,10 +111,15 @@ class ThermalProfileService : Service() {
         return true
     }
 
+    private fun isScreenInteractive(): Boolean =
+        getSystemService(PowerManager::class.java)?.isInteractive == true
+
+    private fun isCallActive(): Boolean =
+        getSystemService(android.telecom.TelecomManager::class.java)?.isInCall == true
+
     private fun canMonitor(): Boolean {
-        val screenInteractive = getSystemService(PowerManager::class.java)?.isInteractive == true
         val userUnlocked = getSystemService(UserManager::class.java)?.isUserUnlocked == true
-        return screenInteractive && userUnlocked
+        return userUnlocked && (isScreenInteractive() || isCallActive())
     }
 
     override fun onDestroy() {
@@ -126,9 +138,7 @@ class ThermalProfileService : Service() {
         fun syncService(context: Context) {
             val appContext = context.applicationContext
             val prefs = PreferenceManager.getDefaultSharedPreferences(appContext)
-            val shouldRun =
-                prefs.getBoolean(ThermalProfileController.PREF_ENABLED, false) &&
-                    ThermalProfileController.hasAppProfiles(appContext)
+            val shouldRun = prefs.getBoolean(ThermalProfileController.PREF_ENABLED, true)
             val intent = Intent(appContext, ThermalProfileService::class.java)
             if (shouldRun) {
                 appContext.startService(intent)
@@ -140,6 +150,7 @@ class ThermalProfileService : Service() {
 
         private const val TAG = "ThermalProfileService"
         private const val MONITOR_INTERVAL = 2000L
+        private const val IN_CALL_MONITOR_INTERVAL = 10_000L
         private const val UNKNOWN_PACKAGE = "Unknown"
     }
 }
