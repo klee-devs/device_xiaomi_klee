@@ -150,4 +150,29 @@
         <item>gradient</item>
         <item>visualizer</item>
     </string-array>
+    <string-array name="thermal_profile_entries">
+        <item>@string/thermal_profile_no_override</item>
+        <item>@string/thermal_profile_normal</item>
+        <item>@string/thermal_profile_phone</item>
+        <item>@string/thermal_profile_arvr</item>
+        <item>@string/thermal_profile_navigation</item>
+        <item>@string/thermal_profile_video</item>
+        <item>@string/thermal_profile_camera</item>
+        <item>@string/thermal_profile_tgame</item>
+        <item>@string/thermal_profile_mgame</item>
+        <item>@string/thermal_profile_yuanshen</item>
+    </string-array>
+
+    <string-array name="thermal_profile_values">
+        <item>none</item>
+        <item>0</item>
+        <item>5</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>15</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
 </resources>

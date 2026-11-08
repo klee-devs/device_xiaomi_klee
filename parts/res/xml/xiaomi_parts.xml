@@ -18,6 +18,12 @@
             android:icon="@drawable/ic_gamebar" />
 
         <Preference
+            android:key="parts_thermal_profiles"
+            android:title="@string/thermal_profiles_title"
+            android:summary="@string/thermal_profiles_summary"
+            android:icon="@drawable/ic_thermal_settings" />
+
+        <Preference
             android:key="parts_touch_sampling"
             android:title="@string/htsr_title"
             android:summary="@string/htsr_enable_summary"

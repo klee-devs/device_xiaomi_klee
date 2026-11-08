@@ -29,6 +29,7 @@ import com.xiaomi.settings.corecontrol.CoreControlActivity
 import com.xiaomi.settings.gamebar.GameBarSettingsActivity
 import com.xiaomi.settings.light.LightSettingsActivity
 import com.xiaomi.settings.touchsampling.TouchSamplingSettingsActivity
+import com.xiaomi.settings.thermal.ThermalProfileSettingsActivity
 
 class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
 
@@ -42,6 +43,11 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
 
         findPreference<Preference>(KEY_GAME_BAR)?.setOnPreferenceClickListener {
             startActivity(Intent(context, GameBarSettingsActivity::class.java))
+            true
+        }
+
+        findPreference<Preference>(KEY_THERMAL_PROFILES)?.setOnPreferenceClickListener {
+            startActivity(Intent(context, ThermalProfileSettingsActivity::class.java))
             true
         }
 
@@ -97,6 +103,7 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
         private const val PROP_ZRAM_ENABLED = "persist.sys.xiaomi.zram_enabled"
         private const val KEY_BACKLIGHT = "parts_backlight"
         private const val KEY_GAME_BAR = "parts_game_bar"
+        private const val KEY_THERMAL_PROFILES = "parts_thermal_profiles"
         private const val KEY_TOUCH_SAMPLING = "parts_touch_sampling"
         private const val KEY_CORE_CONTROL = "parts_core_control"
         private const val KEY_CHARGING_CONTROL = "parts_charging_control"

@@ -152,7 +152,26 @@
 
     <!-- Xiaomi Parts Hub -->
     <string name="xiaomi_parts_title">Xiaomi Parts</string>
-    <string name="xiaomi_parts_summary">Back Light, Game Bar, Touch Sampling, Charging Control, Core Control and ZRAM</string>
+    <string name="thermal_profiles_title">App Thermal Profiles</string>
+    <string name="thermal_profiles_summary">Choose a thermal profile for each app</string>
+    <string name="thermal_profile_enable_title">Enable app thermal profiles</string>
+    <string name="thermal_profile_enable_summary">Apply an app profile while it is in the foreground. Klee thermal protections remain active.</string>
+    <string name="thermal_profile_configure_apps_title">Profiles per app</string>
+    <string name="thermal_profile_configure_apps_summary">Choose a stock thermal profile for each app</string>
+    <string name="thermal_profile_apps_title">Profiles per app</string>
+    <string name="thermal_profile_apps_category">Apps</string>
+    <string name="thermal_profile_dialog_title">Thermal profile for %1$s</string>
+    <string name="thermal_profile_no_override">No override</string>
+    <string name="thermal_profile_normal">Normal</string>
+    <string name="thermal_profile_phone">Phone</string>
+    <string name="thermal_profile_arvr">AR/VR</string>
+    <string name="thermal_profile_navigation">Navigation</string>
+    <string name="thermal_profile_video">Video</string>
+    <string name="thermal_profile_camera">Camera</string>
+    <string name="thermal_profile_tgame">Gaming (TGame)</string>
+    <string name="thermal_profile_mgame">Gaming (MGame)</string>
+    <string name="thermal_profile_yuanshen">Gaming (Yuanshen)</string>
+    <string name="xiaomi_parts_summary">Back Light, Game Bar, App Thermal Profiles, Touch Sampling, Charging Control, Core Control and ZRAM</string>
     <string name="parts_settings_category_title">ilystack27</string>
 
     <!-- RGB Light Settings -->

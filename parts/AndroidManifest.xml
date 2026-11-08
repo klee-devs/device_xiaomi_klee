@@ -129,6 +129,28 @@
             android:name=".gamebar.GameBarMonitorService"
             android:exported="false" />
 
+        <!-- Per-app thermal profiles -->
+        <activity
+            android:name=".thermal.ThermalProfileSettingsActivity"
+            android:label="@string/thermal_profiles_title"
+            android:theme="@style/Theme.SubSettingsBase"
+            android:exported="false" />
+        <activity
+            android:name=".thermal.ThermalProfileAppSelectorActivity"
+            android:label="@string/thermal_profile_apps_title"
+            android:theme="@style/Theme.SubSettingsBase"
+            android:exported="false" />
+        <service
+            android:name=".thermal.ThermalProfileService"
+            android:exported="false" />
+        <receiver
+            android:name=".thermal.ThermalProfileBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <!-- GameBar BootReceiver -->
         <receiver
             android:name=".gamebar.GameBarBootReceiver"

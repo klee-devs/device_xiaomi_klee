@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.preference.SwitchPreferenceCompat
+        android:key="thermal_profile_enabled"
+        android:title="@string/thermal_profile_enable_title"
+        android:summary="@string/thermal_profile_enable_summary"
+        android:defaultValue="false" />
+
+    <Preference
+        android:key="thermal_profile_app_profiles"
+        android:title="@string/thermal_profile_configure_apps_title"
+        android:summary="@string/thermal_profile_configure_apps_summary" />
+
+</PreferenceScreen>
