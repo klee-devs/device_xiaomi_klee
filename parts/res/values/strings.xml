@@ -26,9 +26,7 @@
     <string name="htsr_enable_title">Enable High Touch Polling Rate</string>
 
     <!-- Description for High Touch Polling Rate -->
-    <string name="htsr_enable_summary">
-        Boosts the touch polling rate to reduce input latency, delivering a smoother and more responsive user experience.
-    </string>
+    <string name="htsr_enable_summary">Uses Klee\'s highest stock SuperTouch level (up to 2560 Hz) for the foreground app; disabling it restores stock touch behavior.</string>
 
     <!-- Per-app touch boost -->
     <string name="htsr_auto_enable_title">Auto-enable for selected apps</string>

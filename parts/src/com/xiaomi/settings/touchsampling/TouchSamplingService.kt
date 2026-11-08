@@ -26,7 +26,9 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.Parcel
 import android.os.PowerManager
+import android.os.SystemClock
 import android.os.UserManager
 import android.util.Log
 import androidx.preference.PreferenceManager
@@ -42,6 +44,10 @@ class TouchSamplingService : Service() {
     private var mHandler: Handler? = null
     private var mPollingRunnable: Runnable? = null
     @Volatile private var mLastAppliedState = -1
+    @Volatile private var mLastAppliedPackageName: String? = null
+    @Volatile private var mLastFailedState = -1
+    @Volatile private var mLastFailedPackageName: String? = null
+    @Volatile private var mLastFailureUptimeMs = 0L
     private var mIsScreenInteractive = true
     private var mListenersRegistered = false
 
@@ -120,6 +126,9 @@ class TouchSamplingService : Service() {
                 Log.w(TAG, "ITouchFeature service died, resetting binder")
                 mTouchFeature = null
                 mLastAppliedState = -1
+                mLastAppliedPackageName = null
+                mLastFailedState = -1
+                mLastFailedPackageName = null
             }, 0)
             mTouchFeature = ITouchFeature.Stub.asInterface(binder)
         } catch (e: Exception) {
@@ -135,13 +144,15 @@ class TouchSamplingService : Service() {
                         if (DEBUG) Log.d(TAG, "Screen turned off. Pausing polling.")
                         mIsScreenInteractive = false
                         stopForegroundPolling()
-                        // Touch IC resets hardware registers when display powers down
-                        mLastAppliedState = -1
+                        applyTouchSamplingRate(TOUCH_STATE_DISABLED, force = true)
                     }
                     Intent.ACTION_SCREEN_ON, Intent.ACTION_USER_PRESENT -> {
                         if (DEBUG) Log.d(TAG, "Screen active (${intent.action}). Reapplying touch sampling rate.")
                         mIsScreenInteractive = true
                         mLastAppliedState = -1
+                        mLastAppliedPackageName = null
+                        mLastFailedState = -1
+                        mLastFailedPackageName = null
                         ensurePreferenceListenersRegistered()
                         updateTouchSamplingState()
                     }
@@ -213,8 +224,7 @@ class TouchSamplingService : Service() {
 
         when {
             globalEnabled -> {
-                stopForegroundPolling()
-                applyTouchSamplingRate(1)
+                startForegroundPolling()
             }
             autoEnable -> {
                 val autoApps = PreferenceManager.getDefaultSharedPreferences(this)
@@ -234,36 +244,152 @@ class TouchSamplingService : Service() {
         }
     }
 
-    private fun applyTouchSamplingRate(state: Int, force: Boolean = false) {
-        if (!force && mLastAppliedState == state && mTouchFeature != null) return
-
-        if (mTouchFeature == null) {
-            initTouchFeature()
+    private fun applyTouchSamplingRate(
+        state: Int,
+        packageName: String? = null,
+        force: Boolean = false,
+    ) {
+        val enabled = state == TOUCH_STATE_ENABLED
+        val targetPackage = if (enabled) {
+            packageName?.takeIf { it.isNotBlank() && it != UNKNOWN_FOREGROUND_PACKAGE }
+        } else {
+            ""
         }
 
-        val tf = mTouchFeature ?: return
-
-        val primarySuccess = runCatching {
-            tf.setTouchMode(0, TOUCH_GAME_MODE, state)
-        }.onFailure { e ->
-            Log.e(TAG, "Failed to set TOUCH_GAME_MODE", e)
-            mTouchFeature = null
-            mLastAppliedState = -1
-        }.getOrDefault(false)
-
-        if (!primarySuccess) {
-            Log.w(TAG, "ITouchFeature rejected TOUCH_GAME_MODE state=$state")
+        if (enabled && targetPackage.isNullOrEmpty()) {
+            Log.w(TAG, "Cannot enable SuperTouch without a foreground package; restoring stock rate")
+            applyTouchSamplingRate(TOUCH_STATE_DISABLED, force = true)
             return
         }
 
-        runCatching { tf.setTouchMode(0, TOUCH_SAMPLE_RATE_EXT, state) }
-        runCatching { tf.setTouchMode(0, TOUCH_ACTIVE_MODE, state) }
-        runCatching { tf.setTouchMode(0, TOUCH_TOLERANCE, if (state == 1) 34 else 0) }
-        runCatching { tf.setTouchMode(0, TOUCH_UP_THRESHOLD, if (state == 1) 99 else 0) }
-        runCatching { tf.setTouchMode(0, TOUCH_EDGE_FILTER, if (state == 1) 0 else 1) }
+        if (!force && mLastAppliedState == state &&
+            mLastAppliedPackageName == targetPackage && mTouchFeature != null
+        ) return
+        if (!force && mLastFailedState == state &&
+            mLastFailedPackageName == targetPackage &&
+            SystemClock.elapsedRealtime() - mLastFailureUptimeMs < APPLY_RETRY_INTERVAL_MS
+        ) return
+
+        if (mTouchFeature == null) initTouchFeature()
+        val tf = mTouchFeature
+        if (tf == null) {
+            recordApplyFailure(state, targetPackage)
+            Log.w(TAG, "ITouchFeature unavailable; retrying state=$state package=$targetPackage later")
+            return
+        }
+
+        val applied = if (enabled) {
+            val superTouchEnabled = setTouchModeValue(
+                tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_ENABLE, "SuperTouch enable"
+            )
+            val maxLevelApplied = setTouchModeValue(
+                tf, TOUCH_SUPERTOUCH_LEVEL_MODE, SUPERTOUCH_MAX_LEVEL, "SuperTouch maximum level"
+            )
+            val appListApplied = setTouchModePackageName(
+                tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, targetPackage!!
+            )
+            val success = superTouchEnabled && maxLevelApplied && appListApplied
+            if (!success && mTouchFeature === tf) {
+                setTouchModeValue(tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_DISABLE, "SuperTouch rollback")
+                setTouchModePackageName(tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, "")
+            }
+            success
+        } else {
+            val superTouchDisabled = setTouchModeValue(
+                tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_DISABLE, "SuperTouch disable"
+            )
+            val stockLevelApplied = setTouchModeValue(
+                tf, TOUCH_SUPERTOUCH_LEVEL_MODE, SUPERTOUCH_DEFAULT_LEVEL, "SuperTouch stock level"
+            )
+            val appListCleared = setTouchModePackageName(
+                tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, ""
+            )
+            superTouchDisabled && stockLevelApplied && appListCleared
+        }
+
+        if (mTouchFeature !== tf || !applied) {
+            recordApplyFailure(state, targetPackage)
+            Log.w(TAG, "Stock SuperTouch request failed: state=$state package=$targetPackage")
+            return
+        }
 
         mLastAppliedState = state
-        if (DEBUG) Log.d(TAG, "Touch sampling modes applied: state=$state")
+        mLastAppliedPackageName = targetPackage
+        mLastFailedState = -1
+        mLastFailedPackageName = null
+        Log.i(
+            TAG,
+            "Applied stock SuperTouch: enabled=$enabled level=" +
+                "${if (enabled) SUPERTOUCH_MAX_LEVEL else SUPERTOUCH_DEFAULT_LEVEL} " +
+                "package=$targetPackage"
+        )
+    }
+
+    private fun setTouchModeValue(
+        tf: ITouchFeature,
+        mode: Int,
+        value: Int,
+        description: String,
+    ): Boolean {
+        if (mTouchFeature !== tf) return false
+        return try {
+            val accepted = tf.setTouchMode(TOUCH_ID, mode, value)
+            Log.i(TAG, "$description: mode=$mode value=$value accepted=$accepted")
+            accepted
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to apply $description: mode=$mode value=$value", e)
+            mTouchFeature = null
+            mLastAppliedState = -1
+            mLastAppliedPackageName = null
+            false
+        }
+    }
+
+    /** Mirrors stock TouchService's AIDL transaction for setModePackageName. */
+    private fun setTouchModePackageName(
+        tf: ITouchFeature,
+        mode: Int,
+        packageNames: String,
+    ): Boolean {
+        if (mTouchFeature !== tf) return false
+
+        val binder = tf.asBinder()
+        val request = Parcel.obtain()
+        val response = Parcel.obtain()
+        return try {
+            request.writeInterfaceToken(ITouchFeature.DESCRIPTOR)
+            request.writeInt(TOUCH_ID)
+            request.writeInt(mode)
+            request.writeString(packageNames)
+            val transacted = binder.transact(
+                TRANSACTION_SET_MODE_PACKAGE_NAME, request, response, 0
+            )
+            if (!transacted) {
+                Log.w(TAG, "Touch HAL rejected setModePackageName transaction for mode=$mode")
+                false
+            } else {
+                response.readException()
+                Log.i(TAG, "setModePackageName: mode=$mode packages=$packageNames")
+                true
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to set touch package list for mode=$mode", e)
+            mTouchFeature = null
+            mLastAppliedState = -1
+            mLastAppliedPackageName = null
+            false
+        } finally {
+            response.recycle()
+            request.recycle()
+        }
+    }
+
+    private fun recordApplyFailure(state: Int, packageName: String?) {
+        mLastAppliedState = -1
+        mLastAppliedPackageName = null
+        mLastFailedState = state
+        mLastFailedPackageName = packageName
+        mLastFailureUptimeMs = SystemClock.elapsedRealtime()
     }
 
     private fun startForegroundPolling() {
@@ -306,28 +432,19 @@ class TouchSamplingService : Service() {
             TouchSamplingSettingsFragment.SHAREDHTSR, Context.MODE_PRIVATE
         )
         val globalEnabled = sharedGlobal.getBoolean(TouchSamplingSettingsFragment.HTSR_STATE, false)
-        if (globalEnabled) {
-            applyTouchSamplingRate(1)
-            return
-        }
-
         val defaultPref = PreferenceManager.getDefaultSharedPreferences(this)
         val autoEnable = defaultPref.getBoolean(TouchSamplingSettingsFragment.HTSR_AUTO_ENABLE_KEY, false)
-        if (!autoEnable) {
-            applyTouchSamplingRate(0)
-            return
-        }
-
         val autoApps = defaultPref.getStringSet(
             TouchSamplingSettingsFragment.HTSR_APPS_PREF, emptySet()
         ) ?: emptySet()
-        if (autoApps.isEmpty()) {
-            applyTouchSamplingRate(0)
-            return
-        }
         val foreground = ForegroundAppDetector.getForegroundPackageName(this)
-        val enable = autoApps.contains(foreground)
-        applyTouchSamplingRate(if (enable) 1 else 0)
+            .takeIf { it.isNotBlank() && it != UNKNOWN_FOREGROUND_PACKAGE }
+        val selectedApp = foreground != null && autoApps.contains(foreground)
+        val enable = foreground != null && (globalEnabled || (autoEnable && selectedApp))
+        applyTouchSamplingRate(
+            if (enable) TOUCH_STATE_ENABLED else TOUCH_STATE_DISABLED,
+            if (enable) foreground else null,
+        )
     }
 
     private fun cancelTileNotificationIfNeeded() {
@@ -341,13 +458,20 @@ class TouchSamplingService : Service() {
         private const val TAG = "TouchSamplingService"
         private val DEBUG = Log.isLoggable(TAG, Log.DEBUG)
 
-        private const val TOUCH_GAME_MODE = 0
-        private const val TOUCH_ACTIVE_MODE = 1
-        private const val TOUCH_UP_THRESHOLD = 2
-        private const val TOUCH_TOLERANCE = 3
-        private const val TOUCH_EDGE_FILTER = 7
-        private const val TOUCH_SAMPLE_RATE_EXT = 202
+        private const val TOUCH_ID = 0
+        private const val TOUCH_STATE_DISABLED = 0
+        private const val TOUCH_STATE_ENABLED = 1
+        private const val TOUCH_SUPERTOUCH_MODE = 0x2711
+        private const val TOUCH_SUPERTOUCH_LEVEL_MODE = 0x2779
+        private const val TOUCH_SUPERTOUCH_APP_LIST_MODE = 0x2777
+        private const val SUPERTOUCH_ENABLE = 0x6d
+        private const val SUPERTOUCH_DISABLE = 0x6e
+        private const val SUPERTOUCH_DEFAULT_LEVEL = 2
+        private const val SUPERTOUCH_MAX_LEVEL = 3
+        private const val TRANSACTION_SET_MODE_PACKAGE_NAME = 14
+        private const val UNKNOWN_FOREGROUND_PACKAGE = "Unknown"
 
         private const val POLLING_INTERVAL_MS = 1000L
+        private const val APPLY_RETRY_INTERVAL_MS = 5000L
     }
 }
