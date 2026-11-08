@@ -7,10 +7,10 @@
 DEVICE_PATH := device/xiaomi/klee
 
 # Suppress mapper unsupported-metadata messages from both tags.
-# Filtering the generic SurfaceFlinger tag also hides its other non-fatal logs.
+# The SurfaceFlinger tag must match its lowercase runtime name.
 PRODUCT_SYSTEM_PROPERTIES += \
     log.tag.mtk_wfd_page-uncached=FATAL \
-    log.tag.SurfaceFlinger=FATAL
+    log.tag.surfaceflinger=FATAL
 
 # ZRAM is opt-in through Xiaomi Parts.
 PRODUCT_SYSTEM_PROPERTIES += \
