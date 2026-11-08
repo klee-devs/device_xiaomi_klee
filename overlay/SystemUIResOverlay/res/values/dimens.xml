@@ -16,7 +16,6 @@
 */
 -->
 <resources>
-    <!-- Microns/ums (1000 um = 1mm) per pixel for the given device. If unspecified, UI that
-         relies on this value will not be sized correctly. -->
-    <item format="float" name="pixel_pitch" type="dimen">52.92</item>
+    <!-- Micrometers per pixel for Klee's 6.59-inch 2756x1268 panel. -->
+    <item format="float" name="pixel_pitch" type="dimen">55.18</item>
 </resources>
