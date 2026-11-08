@@ -21,20 +21,19 @@ internal object ThermalProfileController {
     const val AUTO_PROFILE = "auto"
 
     private const val TAG = "ThermalProfileController"
-    private const val PREF_OWNED_PROFILE = "thermal_profile_owned_profile"
-    private const val PREF_BASE_PROFILE = "thermal_profile_base_profile"
     private const val NO_OWNED_PROFILE = -1
     private const val NORMAL_PROFILE = 0
     private const val LEGACY_AUTO_PROFILE = "none"
     private val ALLOWED_PROFILES = setOf(0, 5, 9, 10, 11, 15, 18, 19, 20)
     private val sconfig = File("/sys/class/thermal/thermal_message/sconfig")
+    private var ownedProfile = NO_OWNED_PROFILE
+    private var baseProfile = NORMAL_PROFILE
     private var lastWriteFailure: String? = null
 
     @Synchronized
     fun update(context: Context, foregroundPackage: String?) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val currentProfile = readProfile() ?: return
-        val ownedProfile = prefs.getInt(PREF_OWNED_PROFILE, NO_OWNED_PROFILE)
 
         val savedSelection = foregroundPackage?.let { packageName ->
             prefs.getString(PREF_APP_PROFILE_PREFIX + packageName, AUTO_PROFILE)
@@ -50,21 +49,18 @@ internal object ThermalProfileController {
         if (ownedProfile != NO_OWNED_PROFILE) {
             // Preserve a profile another component changed after we applied ours.
             if (currentProfile != ownedProfile) {
-                clearOwnership(prefs)
+                clearOwnership()
                 return
             }
 
             if (requestedProfile == null) {
-                restoreOwnedProfile(prefs)
+                restoreOwnedProfile()
                 return
             }
 
             if (requestedProfile == currentProfile) return
             if (!writeProfile(requestedProfile)) return
-            if (!prefs.edit().putInt(PREF_OWNED_PROFILE, requestedProfile).commit()) {
-                writeProfile(currentProfile)
-                Log.e(TAG, "Could not persist ownership of thermal profile $requestedProfile")
-            }
+            ownedProfile = requestedProfile
             return
         }
 
@@ -75,41 +71,30 @@ internal object ThermalProfileController {
         if (!isCustomProfile && currentProfile != NORMAL_PROFILE) return
 
         if (!writeProfile(requestedProfile)) return
-        if (!prefs.edit()
-                .putInt(PREF_BASE_PROFILE, currentProfile)
-                .putInt(PREF_OWNED_PROFILE, requestedProfile)
-                .commit()
-        ) {
-            writeProfile(currentProfile)
-            Log.e(TAG, "Could not persist ownership of thermal profile $requestedProfile")
-        }
+        baseProfile = currentProfile
+        ownedProfile = requestedProfile
     }
 
     @Synchronized
     fun restore(context: Context) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val ownedProfile = prefs.getInt(PREF_OWNED_PROFILE, NO_OWNED_PROFILE)
         if (ownedProfile == NO_OWNED_PROFILE) return
 
         val currentProfile = readProfile() ?: return
         if (currentProfile == ownedProfile) {
-            restoreOwnedProfile(prefs)
+            restoreOwnedProfile()
         } else {
-            clearOwnership(prefs)
+            clearOwnership()
         }
     }
 
-    private fun restoreOwnedProfile(prefs: android.content.SharedPreferences) {
-        val baseProfile = prefs.getInt(PREF_BASE_PROFILE, NORMAL_PROFILE)
+    private fun restoreOwnedProfile() {
         if (!writeProfile(baseProfile)) return
-        clearOwnership(prefs)
+        clearOwnership()
     }
 
-    private fun clearOwnership(prefs: android.content.SharedPreferences) {
-        prefs.edit()
-            .remove(PREF_OWNED_PROFILE)
-            .remove(PREF_BASE_PROFILE)
-            .commit()
+    private fun clearOwnership() {
+        ownedProfile = NO_OWNED_PROFILE
+        baseProfile = NORMAL_PROFILE
     }
 
     private fun readProfile(): Int? = runCatching {
