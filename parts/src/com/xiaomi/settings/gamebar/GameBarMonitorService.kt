@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import androidx.preference.PreferenceManager
+import com.xiaomi.settings.utils.ForegroundAppDetector
 import java.util.HashSet
 
 class GameBarMonitorService : Service() {

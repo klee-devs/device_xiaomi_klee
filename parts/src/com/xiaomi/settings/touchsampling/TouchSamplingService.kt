@@ -30,7 +30,7 @@ import android.os.PowerManager
 import android.os.UserManager
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.xiaomi.settings.gamebar.ForegroundAppDetector
+import com.xiaomi.settings.utils.ForegroundAppDetector
 import vendor.xiaomi.hw.touchfeature.ITouchFeature
 
 class TouchSamplingService : Service() {

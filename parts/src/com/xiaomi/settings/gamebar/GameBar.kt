@@ -39,6 +39,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.xiaomi.settings.R
+import com.xiaomi.settings.utils.ForegroundAppDetector
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException

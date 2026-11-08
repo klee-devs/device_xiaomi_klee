@@ -21,7 +21,7 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.xiaomi.settings.gamebar.ForegroundAppDetector
+import com.xiaomi.settings.utils.ForegroundAppDetector
 import com.xiaomi.settings.utils.writeLine
 import java.util.HashSet
 import kotlin.math.abs

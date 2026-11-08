@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.xiaomi.settings.gamebar
+package com.xiaomi.settings.utils
 
 import android.app.ActivityManager
 import android.content.Context
