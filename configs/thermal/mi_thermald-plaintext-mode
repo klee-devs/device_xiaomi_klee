@@ -1,0 +1,1 @@
+# Required sentinel: its presence makes Klee mi_thermald parse decoded configs without AES decryption.

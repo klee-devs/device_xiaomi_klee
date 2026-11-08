@@ -437,9 +437,11 @@ PRODUCT_PACKAGES += \
     android.hardware.thermal-service.pixel \
     thermal_symlinks
 
+# mi_thermald uses the sentinel's presence to parse decoded Klee profiles as plaintext.
 PRODUCT_COPY_FILES += \
     $(DEVICE_PATH)/configs/thermal/thermal-map.conf:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-map.conf \
-    $(DEVICE_PATH)/configs/thermal/thermal-normal.conf:$(TARGET_COPY_OUT_ODM)/etc/thermal-normal.conf \
+    $(DEVICE_PATH)/configs/thermal/mi_thermald-plaintext-mode:$(TARGET_COPY_OUT_VENDOR)/etc/thermal-decrypt \
+    $(call find-copy-subdir-files,thermal-*.conf,$(DEVICE_PATH)/configs/thermal/odm,$(TARGET_COPY_OUT_ODM)/etc) \
     $(DEVICE_PATH)/configs/thermal/thermal_info_config.json:$(TARGET_COPY_OUT_VENDOR)/etc/thermal_info_config.json
 
 # USB
