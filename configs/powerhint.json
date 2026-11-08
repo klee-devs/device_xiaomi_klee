@@ -332,29 +332,30 @@
         "51",
         "0"
       ],
+      "DefaultIndex": 1,
       "HoldFd": true
     },
     {
       "Name": "UclampFGMin",
       "Path": "/dev/cpuctl/foreground/cpu.uclamp.min",
       "Values": [
-        "0",
+        "30",
         "15",
-        "30"
+        "0"
       ],
-      "DefaultIndex": 0,
+      "DefaultIndex": 2,
       "ResetOnInit": true
     },
     {
       "Name": "UclampTAMin",
       "Path": "/dev/cpuctl/top-app/cpu.uclamp.min",
       "Values": [
-        "0",
-        "30",
+        "100",
         "40",
-        "100"
+        "30",
+        "0"
       ],
-      "DefaultIndex": 0,
+      "DefaultIndex": 3,
       "ResetOnInit": true
     },
     {
@@ -489,12 +490,6 @@
       "Node": "GPUBlockBoost",
       "Duration": 5000,
       "Value": "101"
-    },
-    {
-      "PowerHint": "LAUNCH",
-      "Node": "GpuPwrLevel",
-      "Duration": 5000,
-      "Value": "6"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
@@ -732,7 +727,7 @@
       "PowerHint": "LOW_POWER",
       "Node": "GpuPwrLevel",
       "Duration": 0,
-      "Value": "20"
+      "Value": "-1"
     }
   ]
 }
