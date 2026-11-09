@@ -92,7 +92,10 @@ static bool setTouchMode(int mode, int value) {
     packet.mode = mode;
     packet.length = 1;
     packet.buffer[0] = value;
-    ioctl(touchDeviceFd, IOCTL_TOUCH_OPERATION, &packet);
+    if (ioctl(touchDeviceFd, IOCTL_TOUCH_OPERATION, &packet) < 0) {
+        LOG(ERROR) << "Failed to set touch mode " << mode << ": " << strerror(errno);
+        return false;
+    }
     return true;
 }
 
