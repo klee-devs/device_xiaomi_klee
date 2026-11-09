@@ -14,6 +14,8 @@ persist.vendor.XDRVersion u:object_r:vendor_mtk_camera_prop:s0
 # Camera (MiuiCamera)
 ro.vendor.audio.us.proximity             u:object_r:vendor_us_proximity_prop:s0 exact bool
 ro.vendor.display.type                   u:object_r:vendor_display_type_prop:s0 exact string
+ro.vendor.eyecare.level                 u:object_r:vendor_displayfeature_prop:s0
+ro.vendor.eyecare.threshold             u:object_r:vendor_displayfeature_prop:s0
 
 # Display
 persist.vendor.dc_backlight.enable             u:object_r:vendor_displayfeature_prop:s0
