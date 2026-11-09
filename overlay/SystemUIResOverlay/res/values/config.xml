@@ -77,4 +77,34 @@
 
     <!-- Whether usage of the proximity sensor during doze is supported -->
     <bool name="doze_proximity_sensor_supported">false</bool>
+    <!-- Stock Klee uses panel local HBM and does not provide a SystemUI dim LUT.
+         Keep this custom overlay subtle instead of using the much stronger generic
+         curve, so it can temper the panel-wide brightness shift during UDFPS. -->
+    <bool name="config_udfpsFrameworkDimming">true</bool>
+    <string-array name="config_udfpsDimmingBrightnessAlphaArray" translatable="false">
+        <item>3,48</item>
+        <item>4,48</item>
+        <item>6,47</item>
+        <item>10,47</item>
+        <item>20,46</item>
+        <item>30,44</item>
+        <item>45,43</item>
+        <item>70,42</item>
+        <item>100,40</item>
+        <item>150,38</item>
+        <item>227,36</item>
+        <item>300,33</item>
+        <item>400,31</item>
+        <item>500,29</item>
+        <item>600,27</item>
+        <item>800,23</item>
+        <item>1023,22</item>
+        <item>1130,19</item>
+        <item>1211,18</item>
+        <item>1394,16</item>
+        <item>1598,14</item>
+        <item>1817,11</item>
+        <item>2047,9</item>
+        <item>4095,0</item>
+    </string-array>
 </resources>
