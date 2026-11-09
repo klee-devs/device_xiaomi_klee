@@ -53,7 +53,7 @@ avf.remote_attestation.enabled=0
 # Bluetooth
 persist.bluetooth.a2dp_offload.coex_buf_count=3
 persist.bluetooth.a2dp_offload.disabled=false
-persist.bluetooth.a2dp_offload.cap=sbc-aac-ldac-mihc
+persist.bluetooth.a2dp_offload.cap=sbc-aac-ldac
 persist.bluetooth.a2dp_offload.mtk_coex=true
 persist.bluetooth.leaudio_offload.disabled=false
 persist.vendor.bluetooth.leaudio_mode=ums-cg
