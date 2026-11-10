@@ -50,7 +50,7 @@
 
     <!-- Core Control -->
     <string name="core_control_title">Core Control</string>
-    <string name="core_control_summary">Manually enable or disable individual CPU cores</string>
+    <string name="core_control_summary">Choose a CPU profile or enable and disable individual cores</string>
     <string name="core_control_description">Advanced CPU control. Turning off cores may save battery or thermal load, but may affect performance and stability.\n\nAt least two little cores must remain online at all times.</string>
     <string name="core_0">Core 0 (Little)</string>
     <string name="core_1">Core 1 (Little)</string>
@@ -60,6 +60,21 @@
     <string name="core_5">Core 5 (Big)</string>
     <string name="core_6">Core 6 (Big)</string>
     <string name="core_7">Core 7 (Prime)</string>
+    <string name="core_control_min_little_cores">At least 2 little cores must remain online</string>
+
+    <!-- Core Profiles -->
+    <string name="core_profile_title">Profile</string>
+    <string name="core_profile_cores_category">Cores</string>
+    <string name="core_profile_power_saving">Power saving</string>
+    <string name="core_profile_balanced">Balanced</string>
+    <string name="core_profile_performance">Performance</string>
+    <string name="core_profile_custom">Custom</string>
+    <string name="core_profile_power_saving_summary">4 little cores</string>
+    <string name="core_profile_balanced_summary">4 little and 3 big cores</string>
+    <string name="core_profile_performance_summary">All 8 cores, including the prime core</string>
+    <string name="core_profile_custom_summary">Set with the switches below</string>
+    <string name="core_profile_apply_failed">Some cores could not be switched</string>
+    <string name="core_profile_tile_label">CPU profile</string>
 
     <!-- Charging Control -->
     <string name="charging_control_title">Charging Control</string>

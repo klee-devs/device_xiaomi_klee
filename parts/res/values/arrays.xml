@@ -175,4 +175,16 @@
         <item>19</item>
         <item>20</item>
     </string-array>
+
+    <!-- Core Profiles -->
+    <string-array name="core_profile_entries">
+        <item>@string/core_profile_power_saving</item>
+        <item>@string/core_profile_balanced</item>
+        <item>@string/core_profile_performance</item>
+    </string-array>
+    <string-array name="core_profile_values" translatable="false">
+        <item>power_saving</item>
+        <item>balanced</item>
+        <item>performance</item>
+    </string-array>
 </resources>

@@ -16,6 +16,7 @@ import android.view.Display
 import android.view.Display.HdrCapabilities
 import androidx.preference.PreferenceManager
 import com.xiaomi.settings.battery.ChargingLimitService
+import com.xiaomi.settings.corecontrol.CoreProfileController
 import com.xiaomi.settings.display.ColorService
 import com.xiaomi.settings.light.LightService
 import com.xiaomi.settings.touchsampling.TouchSamplingService
@@ -76,6 +77,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
         }
 
         startService(context, ChargingLimitService::class.java, "ChargingLimitService")
+
+        runCatching { CoreProfileController.restoreSaved(context) }
+            .onFailure { Log.e(TAG, "Failed to restore the CPU profile", it) }
     }
 
     private fun overrideHdrTypes(context: Context) {

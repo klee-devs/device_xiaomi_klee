@@ -3,37 +3,50 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/core_control_title">
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_0"
-        android:title="@string/core_0" />
+    <ListPreference
+        android:key="core_profile"
+        android:title="@string/core_profile_title"
+        android:dialogTitle="@string/core_profile_title"
+        android:entries="@array/core_profile_entries"
+        android:entryValues="@array/core_profile_values"
+        android:persistent="false" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_1"
-        android:title="@string/core_1" />
+    <PreferenceCategory
+        android:key="core_category"
+        android:title="@string/core_profile_cores_category">
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_2"
-        android:title="@string/core_2" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_0"
+            android:title="@string/core_0" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_3"
-        android:title="@string/core_3" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_1"
+            android:title="@string/core_1" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_4"
-        android:title="@string/core_4" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_2"
+            android:title="@string/core_2" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_5"
-        android:title="@string/core_5" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_3"
+            android:title="@string/core_3" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_6"
-        android:title="@string/core_6" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_4"
+            android:title="@string/core_4" />
 
-    <androidx.preference.SwitchPreferenceCompat
-        android:key="core_7"
-        android:title="@string/core_7" />
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_5"
+            android:title="@string/core_5" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_6"
+            android:title="@string/core_6" />
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:key="core_7"
+            android:title="@string/core_7" />
+    </PreferenceCategory>
 
     <com.android.settingslib.widget.FooterPreference
         android:key="footer"
