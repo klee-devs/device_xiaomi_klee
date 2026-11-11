@@ -202,6 +202,7 @@
             android:name=".corecontrol.CoreControlActivity"
             android:label="@string/core_control_title"
             android:theme="@style/Theme.SubSettingsBase"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
             <!-- Long-press on the CPU profile tile -->
             <intent-filter>
