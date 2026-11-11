@@ -54,6 +54,7 @@ on property:persist.vendor.connsys.coredump.mode=2 && property:vendor.connsys.dr
 on property:persist.vendor.connsys.coredump.mode=0
     stop bt_dump
     stop wifi_dump
+    stop gps_dump
 
 on property:vendor.connsys.gps_dump_support=yes && property:persist.vendor.connsys.coredump.mode=1 && property:vendor.connsys.driver.ready=yes
     start gps_dump
@@ -61,8 +62,6 @@ on property:vendor.connsys.gps_dump_support=yes && property:persist.vendor.conns
 on property:vendor.connsys.gps_dump_support=yes && property:persist.vendor.connsys.coredump.mode=2 && property:vendor.connsys.driver.ready=yes
     start gps_dump
 
-on property:property:persist.vendor.connsys.coredump.mode=0
-    stop gps_dump
 
 on property:vendor.connsys.driver.ready=yes && property:persist.vendor.connsys.coredump.mode=*
     write /proc/driver/conninfra_dbg "0x13 ${persist.vendor.connsys.coredump.mode}"
