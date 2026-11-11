@@ -311,12 +311,8 @@ class GameBar private constructor(context: Context) {
             mBatteryTemp = tempTenths / 10f
         }
 
+        GameBarFpsMeter.getInstance(mContext).start(isShowFps)
         startUpdates()
-
-        // Start the FPS meter if using the new API method.
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            GameBarFpsMeter.getInstance(mContext).start()
-        }
     }
 
     fun hide() {
@@ -348,9 +344,9 @@ class GameBar private constructor(context: Context) {
         val statViews = ArrayList<View>()
 
         // 1) FPS
-        val fpsVal = GameBarFpsMeter.getInstance(mContext).fps
-        val fpsStr = if (fpsVal >= 0) String.format(Locale.getDefault(), "%.0f", fpsVal) else "N/A"
         if (isShowFps) {
+            val fpsVal = GameBarFpsMeter.getInstance(mContext).fps
+            val fpsStr = if (fpsVal >= 0) String.format(Locale.getDefault(), "%.0f", fpsVal) else "N/A"
             statViews.add(createStatLine("FPS", fpsStr))
         }
 
@@ -577,6 +573,17 @@ class GameBar private constructor(context: Context) {
 
     fun setShowFps(show: Boolean) {
         isShowFps = show
+        if (mIsShowing) {
+            GameBarFpsMeter.getInstance(mContext).start(show)
+            updateStats()
+        }
+    }
+
+    fun setFpsMethod(method: String) {
+        if (mIsShowing) {
+            GameBarFpsMeter.getInstance(mContext).start(isShowFps, method)
+            if (isShowFps) updateStats()
+        }
     }
 
     fun setShowGpuTemp(show: Boolean) {

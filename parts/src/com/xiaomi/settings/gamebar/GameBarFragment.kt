@@ -143,6 +143,11 @@ class GameBarFragment : SettingsBasePreferenceFragment() {
             mGameBar.setShowFps((newValue as Boolean))
             true
         }
+        findPreference<androidx.preference.ListPreference>("game_bar_fps_method")
+            ?.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is String) mGameBar.setFpsMethod(newValue)
+                true
+            }
         mBatteryTempSwitch?.setOnPreferenceChangeListener { _, newValue ->
             mGameBar.setShowBatteryTemp((newValue as Boolean))
             true

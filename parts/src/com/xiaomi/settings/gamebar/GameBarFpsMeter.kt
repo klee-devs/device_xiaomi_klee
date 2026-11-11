@@ -52,31 +52,31 @@ class GameBarFpsMeter private constructor(context: Context) {
         }
     }
 
-    fun start() {
-        val method = mPrefs.getString("game_bar_fps_method", "new")
-        if ("new" != method) return
-
+    fun start(
+        enabled: Boolean = mPrefs.getBoolean("game_bar_fps_enable", false),
+        method: String = mPrefs.getString("game_bar_fps_method", "new") ?: "new",
+    ) {
         stop()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val taskId = focusedTaskId
-            if (taskId <= 0) {
-                return
-            }
-            mCurrentTaskId = taskId
-            try {
-                mWindowManager.registerTaskFpsCallback(mCurrentTaskId, { it.run() }, mTaskFpsCallback!!)
-                mCallbackRegistered = true
-            } catch (e: Exception) {
-            }
-            mLastFpsUpdateTime = System.currentTimeMillis()
-            mHandler.postDelayed(mTaskCheckRunnable, TASK_CHECK_INTERVAL_MS)
+        if (!enabled || method != "new" || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return
         }
+
+        val taskId = focusedTaskId
+        if (taskId <= 0) return
+        mCurrentTaskId = taskId
+        try {
+            mWindowManager.registerTaskFpsCallback(mCurrentTaskId, { it.run() }, mTaskFpsCallback!!)
+            mCallbackRegistered = true
+        } catch (e: Exception) {
+            mCurrentTaskId = -1
+            return
+        }
+        mLastFpsUpdateTime = System.currentTimeMillis()
+        mHandler.postDelayed(mTaskCheckRunnable, TASK_CHECK_INTERVAL_MS)
     }
 
     fun stop() {
-        val method = mPrefs.getString("game_bar_fps_method", "new")
-        if ("new" == method && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (mCallbackRegistered) {
                 try {
                     mWindowManager.unregisterTaskFpsCallback(mTaskFpsCallback!!)
@@ -86,6 +86,7 @@ class GameBarFpsMeter private constructor(context: Context) {
             }
             mHandler.removeCallbacks(mTaskCheckRunnable)
         }
+        mCurrentTaskId = -1
     }
 
     val fps: Float

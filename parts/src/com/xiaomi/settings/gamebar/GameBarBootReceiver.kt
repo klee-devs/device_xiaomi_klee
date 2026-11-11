@@ -33,11 +33,7 @@ class GameBarBootReceiver : BroadcastReceiver() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val mainEnabled = prefs.getBoolean("game_bar_enable", false)
         val autoEnabled = prefs.getBoolean("game_bar_auto_enable", false)
-        if (mainEnabled) {
-            GameBar.getInstance(context).applyPreferences()
-            GameBar.getInstance(context).show()
-        }
-        if (autoEnabled) {
+        if (mainEnabled || autoEnabled) {
             val monitorIntent = Intent(context, GameBarMonitorService::class.java)
             context.startService(monitorIntent)
         }
