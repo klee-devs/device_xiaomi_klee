@@ -108,17 +108,43 @@ object CoreProfileController {
     }
 
     /**
-     * Brings the profile's cores online first, then takes the rest offline from the
-     * highest core down. If a core fails to come online, nothing is taken offline,
-     * so a failed switch never leaves fewer cores up than before.
+     * Applies a profile by bringing its cores online first, then taking the rest
+     * offline from highest to lowest. On failure, it best-effort restores the
+     * original CPU layout.
      */
     internal fun applyWith(profile: CoreProfile, setCore: (Int, Boolean) -> Boolean): Boolean {
-        val allUp = profile.onlineCores.map { core -> setCore(core, true) }.all { it }
-        if (!allUp) return false
-        return (CoreProfile.NUM_CORES - 1 downTo 0)
-            .filterNot(profile::isOnline)
-            .map { core -> setCore(core, false) }
-            .all { it }
+        val originalStates = (0 until CoreProfile.NUM_CORES).associateWith(::isCoreOnline)
+
+        fun restoreOriginalLayout() {
+            var restored = true
+
+            for (core in originalStates.filterValues { it }.keys.sorted()) {
+                if (!setCore(core, true)) restored = false
+            }
+            for (core in CoreProfile.NUM_CORES - 1 downTo 0) {
+                if (originalStates[core] == false && !setCore(core, false)) {
+                    restored = false
+                }
+            }
+
+            if (!restored) Log.e(TAG, "Failed to restore original CPU layout after profile failure")
+        }
+
+        for (core in profile.onlineCores) {
+            if (!setCore(core, true)) {
+                restoreOriginalLayout()
+                return false
+            }
+        }
+
+        for (core in CoreProfile.NUM_CORES - 1 downTo 0) {
+            if (!profile.isOnline(core) && !setCore(core, false)) {
+                restoreOriginalLayout()
+                return false
+            }
+        }
+
+        return true
     }
 
     private fun setCoreOnline(core: Int, online: Boolean): Boolean {
