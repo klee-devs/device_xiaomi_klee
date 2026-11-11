@@ -344,9 +344,10 @@ class GameBar private constructor(context: Context) {
         val statViews = ArrayList<View>()
 
         // 1) FPS
+        var fpsStr = "N/A"
         if (isShowFps) {
             val fpsVal = GameBarFpsMeter.getInstance(mContext).fps
-            val fpsStr = if (fpsVal >= 0) String.format(Locale.getDefault(), "%.0f", fpsVal) else "N/A"
+            fpsStr = if (fpsVal >= 0) String.format(Locale.getDefault(), "%.0f", fpsVal) else "N/A"
             statViews.add(createStatLine("FPS", fpsStr))
         }
 
