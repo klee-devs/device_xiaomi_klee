@@ -434,13 +434,13 @@
     {
       "PowerHint": "INTERACTION",
       "Node": "CPULittleClusterMinFreq",
-      "Duration": 1000,
+      "Duration": 500,
       "Value": "1300000"
     },
     {
       "PowerHint": "INTERACTION",
       "Node": "CPUMidClusterMinFreq",
-      "Duration": 1000,
+      "Duration": 500,
       "Value": "1300000"
     },
     {
@@ -488,7 +488,7 @@
     {
       "PowerHint": "LAUNCH",
       "Node": "GPUBlockBoost",
-      "Duration": 5000,
+      "Duration": 2000,
       "Value": "101"
     },
     {
