@@ -276,22 +276,34 @@ service vendor_tcpdump /vendor/bin/tcpdump-vendor -i any -W 3 -C 5 -s 134 -w /da
 #on property:sys.user.0.ce_available=true
 #    start vendor_tcpdump
 
-on property:ro.debuggable=1
-    setprop persist.vendor.tcpdump.enable true
-    setprop persist.vendor.connsysfw.enable true
+# Connectivity capture is opt-in on debuggable builds and is cleared on every boot.
+# Set the persist properties after boot to enable diagnostics for the current session.
+on boot
+    setprop persist.vendor.tcpdump.enable false
+    setprop persist.vendor.connsysfw.enable false
+    stop vendor_tcpdump
+    stop connsyslogger
 
-# wifi-add: start/stop wlan logs service
-on property:persist.vendor.tcpdump.enable=true
+on property:persist.vendor.tcpdump.enable=true && property:ro.debuggable=1 && property:sys.boot_completed=1
     start vendor_tcpdump
+
+on property:persist.vendor.tcpdump.enable=true && property:ro.debuggable=0
+    setprop persist.vendor.tcpdump.enable false
+    stop vendor_tcpdump
 
 on property:persist.vendor.tcpdump.enable=false
     stop vendor_tcpdump
 
 on property:persist.sys.cota.carrier=OR
+    setprop persist.vendor.tcpdump.enable false
     stop vendor_tcpdump
 
-on property:persist.vendor.connsysfw.enable=true
+on property:persist.vendor.connsysfw.enable=true && property:ro.debuggable=1 && property:sys.boot_completed=1
     start connsyslogger
+
+on property:persist.vendor.connsysfw.enable=true && property:ro.debuggable=0
+    setprop persist.vendor.connsysfw.enable false
+    stop connsyslogger
 
 on property:persist.vendor.connsysfw.enable=false && property:vendor.connsysfw.running=0
     stop connsyslogger

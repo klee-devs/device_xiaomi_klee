@@ -79,8 +79,10 @@ class LightService : Service() {
             }
             "light_enable",
             "light_music_enable",
+            "light_music_apps",
             "light_music_style",
             "light_game_mode_enable",
+            "light_game_mode_apps",
             "light_charging_enable",
             "light_incoming_call_enable",
             "light_incoming_call_color",
@@ -92,6 +94,11 @@ class LightService : Service() {
                 Log.i(TAG, "Preference changed: $key")
                 if (key == "light_music_enable" || key == "light_music_apps") {
                     checkMusicState()
+                }
+                if (key == "light_game_mode_enable" || key == "light_game_mode_apps" ||
+                    key == "light_music_enable" || key == "light_music_apps"
+                ) {
+                    updateBackgroundStatePolling()
                 }
                 postUpdateLedState()
             }
@@ -168,6 +175,7 @@ class LightService : Service() {
             activeMediaControllers.add(controller)
         }
         checkMusicState()
+        updateBackgroundStatePolling()
     }
 
     private fun checkMusicState() {
@@ -211,6 +219,30 @@ class LightService : Service() {
         ledHandler?.post { updateLedState() }
     }
 
+    private fun shouldPollBackgroundState(): Boolean {
+        if (!isServiceRunning) return false
+
+        val gameEnabled = sharedPreferences.getBoolean("light_game_mode_enable", false)
+        val gameApps = sharedPreferences.getStringSet("light_game_mode_apps", HashSet()) ?: HashSet()
+        val musicEnabled = sharedPreferences.getBoolean("light_music_enable", false)
+        val musicApps = sharedPreferences.getStringSet("light_music_apps", HashSet()) ?: HashSet()
+        val musicNeedsFallbackPolling =
+            musicEnabled && musicApps.isNotEmpty() && activeMediaControllers.isEmpty()
+
+        return (gameEnabled && gameApps.isNotEmpty()) || musicNeedsFallbackPolling
+    }
+
+    private fun updateBackgroundStatePolling() {
+        val handler = ledHandler ?: return
+        handler.removeCallbacks(backgroundStateRunnable)
+        if (shouldPollBackgroundState()) {
+            handler.post(backgroundStateRunnable)
+        } else if (isGameModeActive) {
+            isGameModeActive = false
+            handler.post { updateLedState() }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -246,7 +278,7 @@ class LightService : Service() {
             Log.w(TAG, "Failed to register MediaSessionManager listener, missing permissions", e)
         }
 
-        ledHandler?.postDelayed(backgroundStateRunnable, 2000)
+        updateBackgroundStatePolling()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -302,7 +334,7 @@ class LightService : Service() {
             val gameEnabled = sharedPreferences.getBoolean("light_game_mode_enable", false)
             if (gameEnabled) {
                 val foreground = ForegroundAppDetector.getForegroundPackageName(this@LightService)
-                val gameApps = sharedPreferences.getStringSet("light_game_mode_apps", HashSet())!!
+                val gameApps = sharedPreferences.getStringSet("light_game_mode_apps", HashSet()) ?: HashSet()
                 val currentlyInGame = gameApps.contains(foreground)
                 if (currentlyInGame != isGameModeActive) {
                     Log.i(TAG, "Game mode active changed from $isGameModeActive to $currentlyInGame")
@@ -332,7 +364,9 @@ class LightService : Service() {
                 updateLedState() // since this runnable runs on ledHandler
             }
 
-            ledHandler?.postDelayed(this, 2000)
+            if (shouldPollBackgroundState()) {
+                ledHandler?.postDelayed(this, 2000)
+            }
         }
     }
 

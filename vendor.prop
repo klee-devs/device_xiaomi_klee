@@ -66,6 +66,7 @@ persist.vendor.connsys.coredump.mode=0
 persist.vendor.connsys.dynamic.dump=0
 persist.vendor.connsys.fm_chipid=connac2x
 persist.vendor.connsys.patch.version=-1
+persist.vendor.tcpdump.enable=false
 persist.vendor.connsysfw.enable=false
 ro.hardware.wlan.chip=mt663x
 ro.hardware.wlan.dbs=1
