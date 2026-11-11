@@ -19,6 +19,7 @@ package com.xiaomi.settings.utils
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.SystemClock
 import android.util.Log
 import java.lang.reflect.Method
 import java.util.List
@@ -26,17 +27,25 @@ import java.util.List
 object ForegroundAppDetector {
 
     private const val TAG = "ForegroundAppDetector"
+    private const val CACHE_TTL_MS = 250L
 
-    fun getForegroundPackageName(context: Context): String {
-        var pkg = tryGetRunningTasks(context)
-        if (pkg != null) {
-            return pkg
+    private val cacheLock = Any()
+    private var cachedPackageName: String? = null
+    private var cacheTimestampMs = 0L
+
+    fun getForegroundPackageName(context: Context): String = synchronized(cacheLock) {
+        val now = SystemClock.elapsedRealtime()
+        val cached = cachedPackageName
+        if (cached != null && now - cacheTimestampMs < CACHE_TTL_MS) {
+            return@synchronized cached
         }
-        pkg = tryReflectActivityTaskManager()
-        if (pkg != null) {
-            return pkg
-        }
-        return "Unknown"
+
+        val packageName = tryGetRunningTasks(context)
+            ?: tryReflectActivityTaskManager()
+            ?: "Unknown"
+        cachedPackageName = packageName
+        cacheTimestampMs = SystemClock.elapsedRealtime()
+        packageName
     }
 
     private fun tryGetRunningTasks(context: Context): String? {
