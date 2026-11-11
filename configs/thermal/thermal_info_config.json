@@ -278,7 +278,7 @@
             "Type":"GPU"
         },
         {
-            "Name":"charger-cooler",
+            "Name":"battery",
             "Type":"BATTERY"
         }
     ]
