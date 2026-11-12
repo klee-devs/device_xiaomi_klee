@@ -59,6 +59,8 @@ vendor/lib64/libblisrc32_vendor.so
 vendor/lib64/libcvsd_mtk.so
 vendor/lib64/libfsmsmartpaparse.so
 vendor/lib64/libfvaudio.so
+vendor/lib64/libmisoundcrossfade.so
+vendor/lib64/libmisoundfpsop.so
 vendor/lib64/libmispowerop.so
 vendor/lib64/libmsbc_mtk.so
 vendor/lib64/libmtklimiter_vendor.so
