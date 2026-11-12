@@ -75,6 +75,7 @@
     <string name="core_profile_custom_summary">Set with the switches below</string>
     <string name="core_profile_apply_failed">Some cores could not be switched</string>
     <string name="core_profile_tile_label">CPU profile</string>
+    <string name="core_profile_tile_description">CPU profile: %1$s</string>
 
     <!-- Charging Control -->
     <string name="charging_control_title">Charging Control</string>
