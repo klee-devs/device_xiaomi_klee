@@ -275,11 +275,13 @@
     "CoolingDevices":[
         {
             "Name":"devfreq-13000000.mali",
-            "Type":"GPU"
+            "Type":"GPU",
+            "isDisabled":true
         },
         {
             "Name":"battery",
-            "Type":"BATTERY"
+            "Type":"BATTERY",
+            "isDisabled":true
         }
     ]
 }
