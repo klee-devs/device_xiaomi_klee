@@ -926,6 +926,7 @@
     </carrier_config>
     <carrier_config cid="2018">
         <boolean name="carrier_default_wfc_ims_enabled_bool" value="true" />
+        <boolean name="carrier_vt_available_bool" value="true" />
         <boolean name="support_video_conference_call_bool" value="true" />
         <boolean name="vonr_enabled_bool" value="true" />
         <boolean name="vonr_setting_visibility_bool" value="true" />
