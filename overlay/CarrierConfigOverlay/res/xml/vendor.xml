@@ -253,6 +253,9 @@
         <boolean name="call_waiting_over_ut_warning_bool" value="true" />
         <boolean name="caller_id_over_ut_warning_bool" value="true" />
         <boolean name="support_video_conference_call_bool" value="true" />
+        <boolean name="vonr_enabled_bool" value="true" />
+        <boolean name="vonr_setting_visibility_bool" value="true" />
+        <boolean name="vonr_on_by_default_bool" value="false" />
     </carrier_config>
     <carrier_config cid="850">
         <boolean name="vilte_data_is_metered_bool" value="false" />
@@ -875,9 +878,15 @@
         <boolean name="support_video_conference_call_bool" value="true" />
         <boolean name="vilte_data_is_metered_bool" value="false" />
         <boolean name="ignore_data_enabled_changed_for_video_calls" value="true" />
+        <boolean name="vonr_enabled_bool" value="true" />
+        <boolean name="vonr_setting_visibility_bool" value="true" />
+        <boolean name="vonr_on_by_default_bool" value="false" />
     </carrier_config>
     <carrier_config cid="1963">
         <boolean name="support_video_conference_call_bool" value="true" />
+        <boolean name="vonr_enabled_bool" value="true" />
+        <boolean name="vonr_setting_visibility_bool" value="true" />
+        <boolean name="vonr_on_by_default_bool" value="false" />
     </carrier_config>
     <carrier_config cid="1964">
         <boolean name="ignore_rtt_mode_setting_bool" value="true" />
@@ -920,7 +929,7 @@
         <boolean name="support_video_conference_call_bool" value="true" />
         <boolean name="vonr_enabled_bool" value="true" />
         <boolean name="vonr_setting_visibility_bool" value="true" />
-        <boolean name="vonr_on_by_default_bool" value="true" />
+        <boolean name="vonr_on_by_default_bool" value="false" />
         <int name="parameters_use_for_5g_nr_signal_bar_int" value="1" />
         <int-array name="5g_nr_ssrsrp_thresholds_int_array" num="4">
             <item value="-120" />
@@ -1209,6 +1218,9 @@
     </carrier_config>
     <carrier_config cid="2378">
         <boolean name="support_video_conference_call_bool" value="true" />
+        <boolean name="vonr_enabled_bool" value="true" />
+        <boolean name="vonr_setting_visibility_bool" value="true" />
+        <boolean name="vonr_on_by_default_bool" value="false" />
     </carrier_config>
     <carrier_config cid="2385">
         <int name="carrier_default_wfc_ims_mode_int" value="1" />
@@ -7169,14 +7181,11 @@
     <carrier_config mcc="901" mnc="18">
         <boolean name="carrier_volte_available_bool" value="true" />
     </carrier_config>
-    <!-- Force IMS voice controls on after per-carrier profiles for all operators. -->
+    <!-- Force VoLTE controls on after per-carrier profiles for all operators. -->
     <carrier_config>
         <boolean name="carrier_volte_available_bool" value="true" />
         <boolean name="editable_enhanced_4g_lte_bool" value="true" />
         <boolean name="hide_enhanced_4g_lte_bool" value="false" />
         <boolean name="enhanced_4g_lte_on_by_default_bool" value="true" />
-        <boolean name="vonr_enabled_bool" value="true" />
-        <boolean name="vonr_setting_visibility_bool" value="true" />
-        <boolean name="vonr_on_by_default_bool" value="true" />
     </carrier_config>
 </carrier_config_list>
