@@ -284,6 +284,8 @@ blob_fixups: blob_fixups_user_type = {
         .add_needed('libaudioclient_shim.so'),
     'system_ext/lib64/libimsma.so': blob_fixup()
         .replace_needed('libsink.so', 'libsink-mtk.so'),
+    'system/framework/mediatek-telephony-common.jar': blob_fixup()
+        .apktool_patch('blob-patches/MediatekTelephonyCommon'),
     'system_ext/priv-app/ImsService/ImsService.apk': blob_fixup()
         .apktool_patch('blob-patches/ImsService'),
 }  # fmt: skip

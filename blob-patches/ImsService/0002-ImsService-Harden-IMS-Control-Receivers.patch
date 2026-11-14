@@ -1,0 +1,38 @@
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index 033e084..4262c67 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -28,4 +28,4 @@
+     <permission android:label="Ims reg error notification" android:name="com.mediatek.permission.IMS_ERR_NOTIFICATION" android:protectionLevel="signatureOrSystem"/>
+-    <permission android:label="bind AR Call Service" android:name="com.newcall.permission.BIND_ARCALL_SERVICE" android:protectionLevel="normal"/>
+-    <permission android:label="bind VT OEM Service" android:name="com.mediatek.permission.BIND_VT_OEM_SERVICE" android:protectionLevel="normal"/>
++    <permission android:label="bind AR Call Service" android:name="com.newcall.permission.BIND_ARCALL_SERVICE" android:protectionLevel="signature"/>
++    <permission android:label="bind VT OEM Service" android:name="com.mediatek.permission.BIND_VT_OEM_SERVICE" android:protectionLevel="signature"/>
+     <permission android:label="Normal call changes to ecc" android:name="com.mediatek.permission.READ_CALL_TYPE" android:protectionLevel="signatureOrSystem"/>
+diff --git a/smali/com/mediatek/wfo/impl/WfcHandler.smali b/smali/com/mediatek/wfo/impl/WfcHandler.smali
+index d79d719..8b2c2d8 100644
+--- a/smali/com/mediatek/wfo/impl/WfcHandler.smali
++++ b/smali/com/mediatek/wfo/impl/WfcHandler.smali
+@@ -3306,3 +3306,3 @@
+ .method private registerForBroadcast()V
+-    .locals 4
++    .locals 10
+ 
+@@ -3344,5 +3344,15 @@
+ 
+-    const/4 v3, 0x2
++    move-object v4, v1
++
++    move-object v5, v2
++
++    move-object v6, v0
++
++    const-string v7, "android.permission.MODIFY_PHONE_STATE"
++
++    const/4 v8, 0x0
++
++    const/4 v9, 0x2
+ 
+-    invoke-virtual {v1, v2, v0, v3}, Landroid/content/Context;->registerReceiver(Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;I)Landroid/content/Intent;
++    invoke-virtual/range {v4 .. v9}, Landroid/content/Context;->registerReceiver(Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;Ljava/lang/String;Landroid/os/Handler;I)Landroid/content/Intent;
+ 

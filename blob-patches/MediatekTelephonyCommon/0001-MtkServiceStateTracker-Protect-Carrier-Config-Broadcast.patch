@@ -1,0 +1,26 @@
+diff --git a/smali/com/mediatek/internal/telephony/MtkServiceStateTracker.smali b/smali/com/mediatek/internal/telephony/MtkServiceStateTracker.smali
+index 0a52da7..d7fdf85 100644
+--- a/smali/com/mediatek/internal/telephony/MtkServiceStateTracker.smali
++++ b/smali/com/mediatek/internal/telephony/MtkServiceStateTracker.smali
+@@ -221,3 +221,3 @@
+ .method public constructor blacklist <init>(Lcom/android/internal/telephony/GsmCdmaPhone;Lcom/android/internal/telephony/CommandsInterface;Lcom/android/internal/hidden_from_bootclasspath/com/android/internal/telephony/flags/FeatureFlags;)V
+-    .locals 6
++    .locals 12
+     .param p1, "phone"    # Lcom/android/internal/telephony/GsmCdmaPhone;
+@@ -356,3 +356,15 @@
+ 
+-    invoke-virtual {v0, v3, v2}, Landroid/content/Context;->registerReceiver(Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;)Landroid/content/Intent;
++    move-object v6, v0
++
++    move-object v7, v3
++
++    move-object v8, v2
++
++    const-string v9, "android.permission.MODIFY_PHONE_STATE"
++
++    const/4 v10, 0x0
++
++    const/4 v11, 0x2
++
++    invoke-virtual/range {v6 .. v11}, Landroid/content/Context;->registerReceiver(Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;Ljava/lang/String;Landroid/os/Handler;I)Landroid/content/Intent;
+ 
