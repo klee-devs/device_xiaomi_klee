@@ -325,6 +325,10 @@ class TouchSamplingService : Service() {
         )
     }
 
+    /**
+     * Vendor transaction 9 returns an int status, with 0 indicating success.
+     * The frozen local AIDL exposes it as boolean and reads that 0 as false.
+     */
     private fun setTouchModeValue(
         tf: ITouchFeature,
         mode: Int,
@@ -332,16 +336,40 @@ class TouchSamplingService : Service() {
         description: String,
     ): Boolean {
         if (mTouchFeature !== tf) return false
+
+        val binder = tf.asBinder()
+        val request = Parcel.obtain()
+        val response = Parcel.obtain()
         return try {
-            val accepted = tf.setTouchMode(TOUCH_ID, mode, value)
-            Log.i(TAG, "$description: mode=$mode value=$value accepted=$accepted")
-            accepted
+            request.writeInterfaceToken(ITouchFeature.DESCRIPTOR)
+            request.writeInt(TOUCH_ID)
+            request.writeInt(mode)
+            request.writeInt(value)
+            val transacted = binder.transact(
+                TRANSACTION_SET_MODE_VALUE, request, response, 0
+            )
+            if (!transacted) {
+                Log.w(TAG, "Touch HAL rejected setModeValue transaction for mode=$mode")
+                false
+            } else {
+                response.readException()
+                val result = response.readInt()
+                val accepted = result == TOUCH_MODE_RESULT_SUCCESS
+                Log.i(
+                    TAG,
+                    "$description: mode=$mode value=$value result=$result accepted=$accepted"
+                )
+                accepted
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to apply $description: mode=$mode value=$value", e)
             mTouchFeature = null
             mLastAppliedState = -1
             mLastAppliedPackageName = null
             false
+        } finally {
+            response.recycle()
+            request.recycle()
         }
     }
 
@@ -468,7 +496,9 @@ class TouchSamplingService : Service() {
         private const val SUPERTOUCH_DISABLE = 0x6e
         private const val SUPERTOUCH_DEFAULT_LEVEL = 2
         private const val SUPERTOUCH_MAX_LEVEL = 3
+        private const val TRANSACTION_SET_MODE_VALUE = 9
         private const val TRANSACTION_SET_MODE_PACKAGE_NAME = 14
+        private const val TOUCH_MODE_RESULT_SUCCESS = 0
         private const val UNKNOWN_FOREGROUND_PACKAGE = "Unknown"
 
         private const val POLLING_INTERVAL_MS = 1000L
