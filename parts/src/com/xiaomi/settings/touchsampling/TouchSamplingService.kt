@@ -257,7 +257,11 @@ class TouchSamplingService : Service() {
         }
 
         if (enabled && targetPackage.isNullOrEmpty()) {
-            Log.w(TAG, "Cannot enable SuperTouch without a foreground package; restoring stock rate")
+            Log.w(
+                TAG,
+                "Cannot enable touch report-rate mode without a foreground package; " +
+                    "restoring default rate"
+            )
             applyTouchSamplingRate(TOUCH_STATE_DISABLED, force = true)
             return
         }
@@ -278,38 +282,29 @@ class TouchSamplingService : Service() {
             return
         }
 
-        val applied = if (enabled) {
-            val superTouchEnabled = setTouchModeValue(
-                tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_ENABLE, "SuperTouch enable"
-            )
-            val maxLevelApplied = setTouchModeValue(
-                tf, TOUCH_SUPERTOUCH_LEVEL_MODE, SUPERTOUCH_MAX_LEVEL, "SuperTouch maximum level"
-            )
-            val appListApplied = setTouchModePackageName(
-                tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, targetPackage!!
-            )
-            val success = superTouchEnabled && maxLevelApplied && appListApplied
-            if (!success && mTouchFeature === tf) {
-                setTouchModeValue(tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_DISABLE, "SuperTouch rollback")
-                setTouchModePackageName(tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, "")
-            }
-            success
+        val reportRateValue = if (enabled) {
+            TOUCH_REPORT_RATE_HIGH
         } else {
-            val superTouchDisabled = setTouchModeValue(
-                tf, TOUCH_SUPERTOUCH_MODE, SUPERTOUCH_DISABLE, "SuperTouch disable"
+            TOUCH_REPORT_RATE_DEFAULT
+        }
+        val applied = setTouchModeValue(
+            tf,
+            TOUCH_REPORT_RATE_MODE,
+            reportRateValue,
+            if (enabled) "High touch report rate" else "Default touch report rate"
+        )
+        if (!applied && enabled && mTouchFeature === tf) {
+            setTouchModeValue(
+                tf,
+                TOUCH_REPORT_RATE_MODE,
+                TOUCH_REPORT_RATE_DEFAULT,
+                "Touch report-rate rollback"
             )
-            val stockLevelApplied = setTouchModeValue(
-                tf, TOUCH_SUPERTOUCH_LEVEL_MODE, SUPERTOUCH_DEFAULT_LEVEL, "SuperTouch stock level"
-            )
-            val appListCleared = setTouchModePackageName(
-                tf, TOUCH_SUPERTOUCH_APP_LIST_MODE, ""
-            )
-            superTouchDisabled && stockLevelApplied && appListCleared
         }
 
         if (mTouchFeature !== tf || !applied) {
             recordApplyFailure(state, targetPackage)
-            Log.w(TAG, "Stock SuperTouch request failed: state=$state package=$targetPackage")
+            Log.w(TAG, "Touch report-rate request failed: state=$state package=$targetPackage")
             return
         }
 
@@ -319,15 +314,15 @@ class TouchSamplingService : Service() {
         mLastFailedPackageName = null
         Log.i(
             TAG,
-            "Applied stock SuperTouch: enabled=$enabled level=" +
-                "${if (enabled) SUPERTOUCH_MAX_LEVEL else SUPERTOUCH_DEFAULT_LEVEL} " +
+            "Applied touch report-rate mode: enabled=$enabled value=$reportRateValue " +
                 "package=$targetPackage"
         )
     }
 
     /**
-     * Vendor transaction 9 returns an int status, with 0 indicating success.
-     * The frozen local AIDL exposes it as boolean and reads that 0 as false.
+     * Vendor transaction 9 is setModeValue(int, int, int) and returns an int status
+     * (0 means success). The frozen local AIDL describes transaction 9 as boolean
+     * setTouchMode(), so marshal the vendor Binder ABI directly.
      */
     private fun setTouchModeValue(
         tf: ITouchFeature,
@@ -363,45 +358,6 @@ class TouchSamplingService : Service() {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to apply $description: mode=$mode value=$value", e)
-            mTouchFeature = null
-            mLastAppliedState = -1
-            mLastAppliedPackageName = null
-            false
-        } finally {
-            response.recycle()
-            request.recycle()
-        }
-    }
-
-    /** Mirrors stock TouchService's AIDL transaction for setModePackageName. */
-    private fun setTouchModePackageName(
-        tf: ITouchFeature,
-        mode: Int,
-        packageNames: String,
-    ): Boolean {
-        if (mTouchFeature !== tf) return false
-
-        val binder = tf.asBinder()
-        val request = Parcel.obtain()
-        val response = Parcel.obtain()
-        return try {
-            request.writeInterfaceToken(ITouchFeature.DESCRIPTOR)
-            request.writeInt(TOUCH_ID)
-            request.writeInt(mode)
-            request.writeString(packageNames)
-            val transacted = binder.transact(
-                TRANSACTION_SET_MODE_PACKAGE_NAME, request, response, 0
-            )
-            if (!transacted) {
-                Log.w(TAG, "Touch HAL rejected setModePackageName transaction for mode=$mode")
-                false
-            } else {
-                response.readException()
-                Log.i(TAG, "setModePackageName: mode=$mode packages=$packageNames")
-                true
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to set touch package list for mode=$mode", e)
             mTouchFeature = null
             mLastAppliedState = -1
             mLastAppliedPackageName = null
@@ -489,15 +445,11 @@ class TouchSamplingService : Service() {
         private const val TOUCH_ID = 0
         private const val TOUCH_STATE_DISABLED = 0
         private const val TOUCH_STATE_ENABLED = 1
-        private const val TOUCH_SUPERTOUCH_MODE = 0x2711
-        private const val TOUCH_SUPERTOUCH_LEVEL_MODE = 0x2779
-        private const val TOUCH_SUPERTOUCH_APP_LIST_MODE = 0x2777
-        private const val SUPERTOUCH_ENABLE = 0x6d
-        private const val SUPERTOUCH_DISABLE = 0x6e
-        private const val SUPERTOUCH_DEFAULT_LEVEL = 2
-        private const val SUPERTOUCH_MAX_LEVEL = 3
+        private const val TOUCH_REPORT_RATE_MODE = 9
+        // NVT firmware selectors from report-rate-array, not frequency values.
+        private const val TOUCH_REPORT_RATE_DEFAULT = 0
+        private const val TOUCH_REPORT_RATE_HIGH = 1
         private const val TRANSACTION_SET_MODE_VALUE = 9
-        private const val TRANSACTION_SET_MODE_PACKAGE_NAME = 14
         private const val TOUCH_MODE_RESULT_SUCCESS = 0
         private const val UNKNOWN_FOREGROUND_PACKAGE = "Unknown"
 
