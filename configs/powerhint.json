@@ -625,7 +625,7 @@
       "PowerHint": "GAME",
       "Node": "UclampTAMin",
       "Duration": 0,
-      "Value": "40"
+      "Value": "100"
     },
     {
       "PowerHint": "GAME",
