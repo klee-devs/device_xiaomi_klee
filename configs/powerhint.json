@@ -432,30 +432,6 @@
   ],
 "Actions": [
     {
-      "PowerHint": "INTERACTION",
-      "Node": "CPULittleClusterMinFreq",
-      "Duration": 500,
-      "Value": "1300000"
-    },
-    {
-      "PowerHint": "INTERACTION",
-      "Node": "CPUMidClusterMinFreq",
-      "Duration": 500,
-      "Value": "1300000"
-    },
-    {
-      "PowerHint": "INTERACTION",
-      "Node": "UclampFGMin",
-      "Duration": 58,
-      "Value": "15"
-    },
-    {
-      "PowerHint": "INTERACTION",
-      "Node": "UclampTAMin",
-      "Duration": 58,
-      "Value": "40"
-    },
-    {
       "PowerHint": "LAUNCH",
       "Node": "CPUBigClusterMinFreq",
       "Duration": 2000,
@@ -501,7 +477,7 @@
       "PowerHint": "FIXED_PERFORMANCE",
       "Node": "CPUBigClusterMaxFreq",
       "Duration": 0,
-      "Value": "9999999"
+      "Value": "3400000"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
@@ -513,7 +489,7 @@
       "PowerHint": "FIXED_PERFORMANCE",
       "Node": "CPUMidClusterMaxFreq",
       "Duration": 0,
-      "Value": "9999999"
+      "Value": "3200000"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
@@ -525,7 +501,7 @@
       "PowerHint": "FIXED_PERFORMANCE",
       "Node": "CPULittleClusterMaxFreq",
       "Duration": 0,
-      "Value": "9999999"
+      "Value": "2200000"
     },
     {
       "PowerHint": "FIXED_PERFORMANCE",
