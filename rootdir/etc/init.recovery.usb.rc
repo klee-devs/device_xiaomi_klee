@@ -1,4 +1,8 @@
 on init
+    setprop ro.boot.dynamic_partitions true
+    setprop ro.build.ab_update true
+    setprop ro.virtual_ab.enabled true
+    setprop ro.virtual_ab.userspace.snapshots.enabled true
     setprop sys.usb.ffs.aio_compat 1
     setprop sys.usb.configfs 1
     setprop sys.usb.controller "11201000.usb0"
