@@ -394,9 +394,9 @@
     {
       "Name": "GPUBlockBoost",
       "Path": "/sys/kernel/ged/hal/gpu_boost_level",
-      "Values": ["101", "50", "0", "-1"],
+      "Values": ["100", "101", "50", "0", "-1"],
       "ResetOnInit": true,
-      "DefaultIndex": 2
+      "DefaultIndex": 3
     },
     {
       "Name": "PowerHALRenderingState",
@@ -641,6 +641,18 @@
     },
     {
       "PowerHint": "GAME",
+      "Node": "TopAppCpuset",
+      "Duration": 0,
+      "Value": "0-7"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "MemFreq",
+      "Duration": 0,
+      "Value": "9999999999"
+    },
+    {
+      "PowerHint": "GAME",
       "Node": "UclampTAMin",
       "Duration": 0,
       "Value": "100"
@@ -649,7 +661,7 @@
       "PowerHint": "GAME",
       "Node": "GPUBlockBoost",
       "Duration": 0,
-      "Value": "50"
+      "Value": "100"
     },
     {
       "PowerHint": "DISPLAY_CHANGE",
