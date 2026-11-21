@@ -329,10 +329,11 @@
       "Name": "PMQoSCpuDmaLatency",
       "Path": "/dev/cpu_dma_latency",
       "Values": [
-        "51",
-        "0"
+	"0",
+	"51",
+	"1000"
       ],
-      "DefaultIndex": 1,
+      "DefaultIndex": 2,
       "HoldFd": true
     },
     {
@@ -468,6 +469,30 @@
       "Value": "101"
     },
     {
+      "PowerHint": "INTERACTION",
+      "Node": "UclampTAMin",
+      "Duration": 200,
+      "Value": "40"
+    },
+    {
+      "PowerHint": "INTERACTION",
+      "Node": "CPUMidClusterMinFreq",
+      "Duration": 200,
+      "Value": "1500000"
+    },
+    {
+      "PowerHint": "INTERACTION",
+      "Node": "CPUBigClusterMinFreq",
+      "Duration": 200,
+      "Value": "1600000"
+    },
+    {
+      "PowerHint": "INTERACTION",
+      "Node": "MemFreq",
+      "Duration": 200,
+      "Value": "4100000000"
+    },
+    {
       "PowerHint": "FIXED_PERFORMANCE",
       "Node": "GpuPwrLevel",
       "Duration": 0,
@@ -549,7 +574,13 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "GPUBlockBoost",
       "Duration": 0,
-      "Value": "50"
+      "Value": "100"
+    },
+    {
+      "PowerHint": "EXPENSIVE_RENDERING",
+      "Node": "MemFreq",
+      "Duration": 0,
+      "Value": "6400000000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
@@ -561,7 +592,7 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "UclampTAMin",
       "Duration": 0,
-      "Value": "30"
+      "Value": "40"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
