@@ -282,60 +282,20 @@ class TouchSamplingService : Service() {
             return
         }
 
-        val applied = if (enabled) {
-            setTouchModeValue(
-                tf,
-                TOUCH_SUPERTOUCH_MODE,
-                TOUCH_SUPERTOUCH_ENABLE,
-                "SuperTouch enable",
-            ) && setTouchModeValue(
-                tf,
-                TOUCH_SUPERTOUCH_LEVEL_MODE,
-                TOUCH_SUPERTOUCH_LEVEL,
-                "SuperTouch level",
-            ) && setModePackageName(
-                tf,
-                TOUCH_SUPERTOUCH_APP_MODE,
-                targetPackage!!,
-                "SuperTouch package",
-            )
-        } else {
-            setTouchModeValue(
-                tf,
-                TOUCH_SUPERTOUCH_MODE,
-                TOUCH_SUPERTOUCH_DISABLE,
-                "SuperTouch disable",
-            ) && setModePackageName(
-                tf,
-                TOUCH_SUPERTOUCH_APP_MODE,
-                "",
-                "SuperTouch package clear",
-            )
-        }
+        val applied = applyStockResponsiveness(tf, enabled, targetPackage.orEmpty())
 
         if (!applied) {
-            if (enabled && mTouchFeature === tf) {
-                setTouchModeValue(
-                    tf,
-                    TOUCH_SUPERTOUCH_MODE,
-                    TOUCH_SUPERTOUCH_DISABLE,
-                    "SuperTouch rollback",
-                )
-                setModePackageName(
-                    tf,
-                    TOUCH_SUPERTOUCH_APP_MODE,
-                    "",
-                    "SuperTouch package rollback",
-                )
+            if (mTouchFeature === tf) {
+                applyStockResponsiveness(tf, enabled = false, packageName = "")
             }
             recordApplyFailure(state, targetPackage)
-            Log.w(TAG, "SuperTouch request failed: state=$state package=$targetPackage")
+            Log.w(TAG, "Stock touch responsiveness request failed: state=$state package=$targetPackage")
             return
         }
 
         if (mTouchFeature !== tf) {
             recordApplyFailure(state, targetPackage)
-            Log.w(TAG, "Touch HAL changed while applying SuperTouch; retrying later")
+            Log.w(TAG, "Touch HAL changed while applying touch responsiveness; retrying later")
             return
         }
 
@@ -345,7 +305,70 @@ class TouchSamplingService : Service() {
         mLastFailedPackageName = null
         Log.i(
             TAG,
-            "Applied SuperTouch state: enabled=$enabled package=$targetPackage"
+            "Applied stock touch responsiveness: enabled=$enabled package=$targetPackage"
+        )
+    }
+
+    /**
+     * Mirrors the stock GameTurboTool Super Core cluster in HAL order: boolean
+     * toggles, levels, then package scoping. This is semantic SuperTouch state.
+     */
+    private fun applyStockResponsiveness(
+        tf: ITouchFeature,
+        enabled: Boolean,
+        packageName: String,
+    ): Boolean {
+        val scopedPackage = if (enabled) packageName else ""
+        return setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            TOUCH_FIRSTFRAME_BOOST_ENABLE,
+            "First-frame boost enable",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            if (enabled) TOUCH_SUPERTOUCH_ENABLE else TOUCH_SUPERTOUCH_DISABLE,
+            if (enabled) "SuperTouch enable" else "SuperTouch disable",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            TOUCH_PENDINGBUFFER_ENABLE,
+            "Pending-buffer enable",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            TOUCH_FIRSTFRAME_DURATION_DISABLE,
+            "First-frame duration stock state",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            TOUCH_DYNAMIC_DROPBUFFER_DISABLE,
+            "Dynamic drop-buffer stock state",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_CORE_MODE,
+            TOUCH_VSYNCBUFFER_DISABLE,
+            "Vsync-buffer stock state",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_SUPERTOUCH_LEVEL_MODE,
+            TOUCH_SUPERTOUCH_LEVEL,
+            "SuperTouch level",
+        ) && setTouchModeValue(
+            tf,
+            TOUCH_PENDINGBUFFER_LEVEL_MODE,
+            TOUCH_PENDINGBUFFER_LEVEL,
+            "Pending-buffer level",
+        ) && setModePackageName(
+            tf,
+            TOUCH_SUPERTOUCH_APP_MODE,
+            scopedPackage,
+            "SuperTouch package",
+        ) && setModePackageName(
+            tf,
+            TOUCH_PENDINGBUFFER_APP_MODE,
+            scopedPackage,
+            "Pending-buffer package",
         )
     }
 
@@ -516,13 +539,21 @@ class TouchSamplingService : Service() {
         private const val TOUCH_STATE_ENABLED = 1
 
         // Semantic modes handled by the stock touchfeature HAL.
-        private const val TOUCH_SUPERTOUCH_MODE = 10001
+        private const val TOUCH_CORE_MODE = 10001
+        private const val TOUCH_FIRSTFRAME_BOOST_ENABLE = 0x6f
+        private const val TOUCH_FIRSTFRAME_DURATION_DISABLE = 0x66
         private const val TOUCH_SUPERTOUCH_ENABLE = 0x6d
         private const val TOUCH_SUPERTOUCH_DISABLE = 0x6e
+        private const val TOUCH_PENDINGBUFFER_ENABLE = 0x73
+        private const val TOUCH_DYNAMIC_DROPBUFFER_DISABLE = 0x6c
+        private const val TOUCH_VSYNCBUFFER_DISABLE = 0x76
         private const val TOUCH_SUPERTOUCH_LEVEL_MODE = 10105
-        // Level configured by the stock GameTurboTool config on klee.
+        // Levels configured by the stock GameTurboTool config on klee.
         private const val TOUCH_SUPERTOUCH_LEVEL = 2
+        private const val TOUCH_PENDINGBUFFER_LEVEL_MODE = 10106
+        private const val TOUCH_PENDINGBUFFER_LEVEL = 2
         private const val TOUCH_SUPERTOUCH_APP_MODE = 10103
+        private const val TOUCH_PENDINGBUFFER_APP_MODE = 10104
 
         private const val TRANSACTION_SET_MODE_VALUE = 9
         private const val TRANSACTION_SET_MODE_PACKAGE_NAME = 14
