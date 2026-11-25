@@ -22,21 +22,21 @@
     <!-- Title for the High Touch Responsiveness feature -->
     <string name="htsr_title">Enhanced Touch Responsiveness</string>
 
-    <!-- Title for enabling High Touch Polling Rate -->
-    <string name="htsr_enable_title">Enable High Touch Polling Rate</string>
+    <!-- Title for enabling Enhanced Touch Responsiveness -->
+    <string name="htsr_enable_title">Enable Enhanced Touch Responsiveness</string>
 
-    <!-- Description for High Touch Polling Rate -->
-    <string name="htsr_enable_summary">Uses Klee\'s highest stock SuperTouch level (up to 2560 Hz) for the foreground app; disabling it restores stock touch behavior.</string>
+    <!-- Description for Enhanced Touch Responsiveness -->
+    <string name="htsr_enable_summary">Uses Klee\'s maximum stock touch responsiveness for the foreground app; disabling restores stock behavior.</string>
 
     <!-- Per-app touch boost -->
     <string name="htsr_auto_enable_title">Auto-enable for selected apps</string>
     <string name="htsr_auto_enable_summary">Automatically enable touch boost for selected foreground apps</string>
     <string name="htsr_choose_apps_title">Choose boosted apps</string>
-    <string name="htsr_choose_apps_summary">Select apps that should use high touch polling rate</string>
+    <string name="htsr_choose_apps_summary">Select apps that should use enhanced touch responsiveness</string>
     <string name="htsr_app_added">%1$s added.</string>
     <string name="touch_sampling_tile_label">Touch Boost</string>
-    <string name="touch_sampling_mode_title">High Touch Polling Mode</string>
-    <string name="touch_sampling_mode_notification">High Touch Polling Rate is now active. This reduces touch input latency but may increase battery consumption</string>
+    <string name="touch_sampling_mode_title">Enhanced Touch Responsiveness</string>
+    <string name="touch_sampling_mode_notification">Enhanced touch responsiveness is now active. This reduces touch input latency but may increase battery consumption</string>
 
     <!-- Low-light fingerprint unlock -->
     <string name="fingerprint_settings_category_title">Fingerprint</string>
