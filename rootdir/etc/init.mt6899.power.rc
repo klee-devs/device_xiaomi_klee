@@ -23,8 +23,8 @@ on init
     write /dev/cpuset/system-background/cpus 0-2
     write /dev/cpuset/top-app/cpus 0-7
 
-    setprop dalvik.vm.dex2oat-cpu-set 0,1,2,3,4,5,6
-    setprop dalvik.vm.dex2oat-threads 6
+    setprop dalvik.vm.dex2oat-cpu-set 0,1,2,3,4
+    setprop dalvik.vm.dex2oat-threads 4
 
     # fs
     write /sys/block/mmcblk0/queue/nr_requests 64
