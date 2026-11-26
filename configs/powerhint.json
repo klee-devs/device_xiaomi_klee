@@ -329,11 +329,10 @@
       "Name": "PMQoSCpuDmaLatency",
       "Path": "/dev/cpu_dma_latency",
       "Values": [
-	"0",
-	"51",
-	"1000"
+        "51",
+        "0"
       ],
-      "DefaultIndex": 2,
+      "DefaultIndex": 1,
       "HoldFd": true
     },
     {
@@ -574,13 +573,7 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "GPUBlockBoost",
       "Duration": 0,
-      "Value": "100"
-    },
-    {
-      "PowerHint": "EXPENSIVE_RENDERING",
-      "Node": "MemFreq",
-      "Duration": 0,
-      "Value": "6400000000"
+      "Value": "50"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
@@ -592,7 +585,7 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "UclampTAMin",
       "Duration": 0,
-      "Value": "40"
+      "Value": "30"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
