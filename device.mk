@@ -392,6 +392,7 @@ PRODUCT_PACKAGES += \
     vendor_mdota_symlink
 
 PRODUCT_PACKAGES += \
+    KleeIwlanTelephony \
     xiaomi-telephony-stub
 
 PRODUCT_BOOT_JARS += \

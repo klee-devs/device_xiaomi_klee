@@ -755,4 +755,9 @@
     <string-array name="config_oemFastChargerStatusPaths" translatable="false">
         <item>/sys/class/power_supply/bms/fastcharge_mode;1</item>
     </string-array>
+    <!-- MediaTek IWLAN services are provided by KleeIwlanTelephony. -->
+    <string name="config_wlan_network_service_package" translatable="false">com.xiaomi.klee.telephony</string>
+    <string name="config_wlan_network_service_class" translatable="false">com.mediatek.internal.telephony.IWlanNetworkService</string>
+    <string name="config_wlan_data_service_package" translatable="false">com.xiaomi.klee.telephony</string>
+    <string name="config_wlan_data_service_class" translatable="false">com.mediatek.internal.telephony.data.IwlanDataService</string>
 </resources>

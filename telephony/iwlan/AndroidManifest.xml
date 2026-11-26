@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2026 SoloSaravanan
+
+    SPDX-License-Identifier: Apache-2.0
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xiaomi.klee.telephony"
+    android:sharedUserId="android.uid.phone">
+
+    <application
+        android:directBootAware="true">
+
+        <service
+            android:name="com.mediatek.internal.telephony.IWlanNetworkService"
+            android:exported="true"
+            android:permission="android.permission.BIND_TELEPHONY_NETWORK_SERVICE">
+            <intent-filter>
+                <action android:name="android.telephony.NetworkService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.mediatek.internal.telephony.data.IwlanDataService"
+            android:exported="true"
+            android:permission="android.permission.BIND_TELEPHONY_DATA_SERVICE">
+            <intent-filter>
+                <action android:name="android.telephony.data.DataService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

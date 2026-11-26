@@ -1,0 +1,20 @@
+//
+// Copyright (C) 2026 SoloSaravanan
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+
+// Hosts the MediaTek IWLAN telephony services from mediatek-telephony-common.jar.
+// The jar is on the boot classpath, so the manifest can reference its public
+// service classes directly without compiling against the dex-only jar.
+android_app {
+    name: "KleeIwlanTelephony",
+    manifest: "AndroidManifest.xml",
+    platform_apis: true,
+    privileged: true,
+    certificate: "platform",
+
+    optimize: {
+        enabled: false,
+    },
+}
