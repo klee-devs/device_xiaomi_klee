@@ -83,7 +83,7 @@ class XiaomiPartsFragment : SettingsBasePreferenceFragment() {
         }
 
         findPreference<SwitchPreferenceCompat>(KEY_ZRAM_ENABLED)?.apply {
-            isChecked = SystemProperties.getBoolean(PROP_ZRAM_ENABLED, false)
+            isChecked = SystemProperties.getBoolean(PROP_ZRAM_ENABLED, true)
             setOnPreferenceChangeListener { _, newValue ->
                 val enabled = newValue as? Boolean
                     ?: return@setOnPreferenceChangeListener false
