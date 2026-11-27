@@ -21,11 +21,8 @@ LOCAL_OVERRIDES_MODULES := \
     Stk \
     WallpaperBackup \
     CallLogBackup \
-    CellBroadcastLegacyApp \
     DeviceDiagnostics \
     LiveWallpapersPicker \
-    BtHelper \
-    BtHelperAdapter \
     Updater \
     Gramophone \
     ANGLE \
